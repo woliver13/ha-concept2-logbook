@@ -74,7 +74,7 @@ and real API round-trip actually work together.
       (automated test).
 - [x] `afk` `last_workout_date` reports `unknown` when the mocked API returns zero `rower`
       results, and reports the correct timestamp when one exists (automated test).
-- [ ] `hitl` Install the integration on the real HA instance, enter a real Concept2 personal
+- [x] `hitl` Install the integration on the real HA instance, enter a real Concept2 personal
       access token, and confirm the config flow succeeds and the device/sensor appear in
       Settings → Devices & Services.
 
