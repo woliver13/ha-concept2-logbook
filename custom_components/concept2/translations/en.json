@@ -1,0 +1,27 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Enter the personal access token from log.concept2.com → Edit Profile → Applications → Connect to Concept2 Logbook API.",
+        "data": {
+          "access_token": "Access token"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid or expired access token.",
+      "cannot_connect": "Could not connect to the Concept2 Logbook API.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This Concept2 account is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_workout_date": {
+        "name": "Last workout date"
+      }
+    }
+  }
+}

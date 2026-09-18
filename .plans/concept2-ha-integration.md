@@ -67,12 +67,12 @@ and real API round-trip actually work together.
 
 ### Acceptance criteria
 
-- [ ] `afk` Config flow rejects an invalid/expired token with `invalid_auth` and rejects an
+- [x] `afk` Config flow rejects an invalid/expired token with `invalid_auth` and rejects an
       unreachable API with `cannot_connect` (mocked API, automated test).
-- [ ] `afk` Config flow succeeds with a valid mocked token and creates a config entry keyed by
+- [x] `afk` Config flow succeeds with a valid mocked token and creates a config entry keyed by
       the Concept2 user id; a second attempt for the same user id is rejected as a duplicate
       (automated test).
-- [ ] `afk` `last_workout_date` reports `unknown` when the mocked API returns zero `rower`
+- [x] `afk` `last_workout_date` reports `unknown` when the mocked API returns zero `rower`
       results, and reports the correct timestamp when one exists (automated test).
 - [ ] `hitl` Install the integration on the real HA instance, enter a real Concept2 personal
       access token, and confirm the config flow succeeds and the device/sensor appear in
