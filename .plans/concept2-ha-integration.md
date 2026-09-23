@@ -106,16 +106,16 @@ logged row, since automated tests can't confirm the values "look right" in the a
 
 ### Acceptance criteria
 
-- [ ] `afk` `last_workout_distance` and `last_workout_duration` report correct values, units,
+- [x] `afk` `last_workout_distance` and `last_workout_duration` report correct values, units,
       and `device_class`/`state_class` against a mocked `rower` result (automated test).
-- [ ] `afk` `days_since_last_workout` is correct across a local-timezone midnight boundary and
+- [x] `afk` `days_since_last_workout` is correct across a local-timezone midnight boundary and
       reports `0` for a same-day workout (automated test, time-frozen).
-- [ ] `afk` A mocked API response containing `bike`/`ski` results alongside `rower` results does
+- [x] `afk` A mocked API response containing `bike`/`ski` results alongside `rower` results does
       not change any sensor's value (automated test).
-- [ ] `afk` `calories_total`, `stroke_count`, `stroke_rate`, and `drag_factor` appear as extra
+- [x] `afk` `calories_total`, `stroke_count`, `stroke_rate`, and `drag_factor` appear as extra
       attributes on `last_workout_date` (automated test).
-- [ ] `afk` All four sensors report `unknown` when zero `rower` results exist (automated test).
-- [ ] `hitl` On the real HA instance, with a real logged rowing result, visually confirm all
+- [x] `afk` All four sensors report `unknown` when zero `rower` results exist (automated test).
+- [x] `hitl` On the real HA instance, with a real logged rowing result, visually confirm all
       four sensors and the extra attributes show correct, sensible values in the HA UI.
 
 ---

@@ -21,6 +21,15 @@
     "sensor": {
       "last_workout_date": {
         "name": "Last workout date"
+      },
+      "last_workout_distance": {
+        "name": "Last workout distance"
+      },
+      "last_workout_duration": {
+        "name": "Last workout duration"
+      },
+      "days_since_last_workout": {
+        "name": "Days since last workout"
       }
     }
   }
