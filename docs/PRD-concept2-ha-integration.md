@@ -41,7 +41,8 @@ separate downstream automation (out of scope here) can alert when the answer is 
 
 - No support for other Concept2 machine types beyond the indoor rower (`bike`, `ski` results are
   fetched by the API but explicitly filtered out of these sensors — see §6.2).
-- No historical analytics (weekly/monthly totals, personal records, trend charts) — see Phase 2.
+- No historical analytics (weekly/monthly totals, personal records, trend charts) — see the
+  Roadmap's richer-sensors item (§8).
 - No multi-profile / multi-user support in the UI or automations, though the data model is built
   so this isn't a breaking change later (see §6.7).
 - No building of the actual "haven't rowed in N days" alert automation. This integration's
@@ -50,7 +51,7 @@ separate downstream automation (out of scope here) can alert when the answer is 
   sensor-exposes-data-only pattern already established elsewhere in that project.
 - No touching of other data sources in the broader project — those are separate, already-working
   or separately-deferred pieces outside this repo's scope.
-- No HACS default-store submission in this phase (see Phase 2).
+- No HACS default-store submission in this phase (see the Roadmap, §8).
 
 ## 5. Users
 
@@ -78,8 +79,8 @@ current intent to actively support external users during the MVP phase.
 - Fetch page 1 only (default `per_page`, assumed sorted by date descending — verify during
   implementation and explicitly sort/select client-side if the API does not guarantee this).
   MVP only needs the single most recent result; do not fetch or cache additional history pages.
-  This is a deliberate scope cut — Phase 2 sensors that need more history should extend the
-  coordinator's fetch logic then, not now.
+  This is a deliberate scope cut — a future richer-sensors extension (§8) that needs more history
+  should extend the coordinator's fetch logic then, not now.
 - Filter results to `type == "rower"` before use. A logged bike or ski-erg session must not reset
   "days since last workout" or change the "last workout" sensors — the whole point of these
   sensors is tracking rowing specifically.
@@ -100,8 +101,8 @@ All sensors belong to a single HA device representing the Concept2 account.
 Extra API fields not worth a dedicated MVP sensor — `calories_total`, `stroke_count`,
 `stroke_rate`, `drag_factor` — are attached as `extra_state_attributes` on the **last workout
 date** sensor, since the coordinator already has them in the same API response at no extra cost.
-The `workout.splits` array is excluded (too large/nested for a state attribute; a Phase 2 concern
-if ever needed).
+The `workout.splits` array is excluded (too large/nested for a state attribute; a future
+richer-sensors concern, §8, if ever needed).
 
 ### 6.4 Manual refresh
 
@@ -137,7 +138,7 @@ waiting until the next scheduled poll.
   token before creating the config entry. Distinguish `invalid_auth` (bad/expired token) from
   `cannot_connect` (network/API unreachable) in the error shown to the user.
 - The config entry's `unique_id` is the Concept2 user id returned by that validation call. This
-  prevents adding the same account twice and means the Phase 2 "multiple rowers" roadmap item
+  prevents adding the same account twice and means the "multiple rowers" roadmap item
   (§8) is additive — each account gets its own config entry/device — rather than requiring a
   breaking migration.
 - Entity `unique_id`s and the HA device identifier are namespaced by that same Concept2 user id
@@ -183,17 +184,19 @@ entry, including coordinator state and the last raw API response, with the acces
   `manifest.json`'s `version` and push a matching semver git tag (e.g. `v0.1.0`) — no CI/release
   automation for MVP.
 
-## 8. Roadmap (Phase 2+, not built now)
+## 8. Roadmap (Post-MVP, not built now)
 
 Named here to set expectations for what "future work" means on this project; none of the
-following is in scope for MVP acceptance.
+following is in scope for MVP acceptance. These are intentionally *not* labeled "Phase N" — that
+numbering is reserved for the MVP build-out phases in
+[.plans/concept2-ha-integration.md](../.plans/concept2-ha-integration.md).
 
-- **Phase 2 — HACS default store submission**: pass `hassfest`/HACS validation, brands
-  registration, CI validation workflow.
-- **Phase 3 — richer sensors**: weekly/monthly distance and time totals, personal records,
+- **Richer sensors**: weekly/monthly distance and time totals, personal records,
   stroke rate/drag factor history — likely requires extending the coordinator to fetch and cache
   a rolling history window (§6.2) rather than just the latest result.
-- **Phase 4 — multi-profile support**: multiple Concept2 accounts/rowers under one HA instance,
+- **HACS default store submission**: pass `hassfest`/HACS validation, brands
+  registration, CI validation workflow.
+- **Multi-profile support**: multiple Concept2 accounts/rowers under one HA instance,
   if other household members start rowing. The user-id-keyed config entry/device design in §6.7
   is intended to make this additive rather than a breaking change.
 
