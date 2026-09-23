@@ -115,7 +115,7 @@ logged row, since automated tests can't confirm the values "look right" in the a
 - [x] `afk` `calories_total`, `stroke_count`, `stroke_rate`, and `drag_factor` appear as extra
       attributes on `last_workout_date` (automated test).
 - [x] `afk` All four sensors report `unknown` when zero `rower` results exist (automated test).
-- [ ] `hitl` On the real HA instance, with a real logged rowing result, visually confirm all
+- [x] `hitl` On the real HA instance, with a real logged rowing result, visually confirm all
       four sensors and the extra attributes show correct, sensible values in the HA UI.
 
 ---
