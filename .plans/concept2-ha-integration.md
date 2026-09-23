@@ -147,7 +147,7 @@ the configured time in production.
       an incremented mock API call count (automated test).
 - [x] `afk` The fixed nightly trigger fires a refresh at the configured local time (automated
       test using time-freezing/time-travel, not a real-time wait).
-- [ ] `hitl` On the real HA instance, press the dashboard refresh button after logging a new row
+- [x] `hitl` On the real HA instance, press the dashboard refresh button after logging a new row
       and confirm the sensors update within a few seconds.
 - [ ] `hitl` Leave the integration running overnight at least once and confirm the nightly poll
       actually fires at the configured wall-clock time (via logs or an updated `last_updated`).
