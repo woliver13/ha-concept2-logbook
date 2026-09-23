@@ -18,6 +18,11 @@
     }
   },
   "entity": {
+    "button": {
+      "refresh": {
+        "name": "Refresh"
+      }
+    },
     "sensor": {
       "last_workout_date": {
         "name": "Last workout date"

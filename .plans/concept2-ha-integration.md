@@ -143,9 +143,9 @@ the configured time in production.
 
 ### Acceptance criteria
 
-- [ ] `afk` Pressing the refresh button triggers an immediate coordinator refresh, verified by
+- [x] `afk` Pressing the refresh button triggers an immediate coordinator refresh, verified by
       an incremented mock API call count (automated test).
-- [ ] `afk` The fixed nightly trigger fires a refresh at the configured local time (automated
+- [x] `afk` The fixed nightly trigger fires a refresh at the configured local time (automated
       test using time-freezing/time-travel, not a real-time wait).
 - [ ] `hitl` On the real HA instance, press the dashboard refresh button after logging a new row
       and confirm the sensors update within a few seconds.

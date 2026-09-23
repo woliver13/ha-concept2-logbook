@@ -19,9 +19,8 @@ from .const import DOMAIN, LOGGER
 class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2Result | None]):
     """Fetches the latest logged rower result from the Concept2 API.
 
-    No automatic polling schedule is configured yet (update_interval=None) — this
-    phase only covers the initial fetch on setup and on-demand refreshes. A fixed
-    nightly schedule and a manual refresh button are added in a later phase.
+    There is no rolling update_interval: refreshes happen on setup, at a fixed local
+    nightly time (registered in __init__.py), and on demand via the refresh button.
     """
 
     def __init__(
