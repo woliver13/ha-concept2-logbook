@@ -10,12 +10,17 @@ You need:
 
 - Access to your Home Assistant OS instance with the Concept2 Logbook integration installed.
 - Your real Concept2 access token.
-- The Terminal & SSH add-on or the File editor add-on.
+- The Terminal & SSH add-on.
+- A second way to reach the host if the add-on stops working: SSH from your computer, or a keyboard and screen on the host.
 
 Time to complete: 10 minutes.
 
 > **WARNING:** Do not edit `core.config_entries` while Home Assistant Core runs.
 > Home Assistant overwrites your change when it stops.
+
+> **WARNING:** When Core stops, the web interface and its add-on panels stop.
+> Do the whole procedure in one terminal window. Do not close this window until Core runs again.
+> Do not use the File editor add-on. It does not work while Core is stopped.
 
 ## Procedure
 
@@ -45,11 +50,17 @@ Time to complete: 10 minutes.
    cp /config/.storage/core.config_entries /config/.storage/core.config_entries.bak
    ```
 
-2. Open `/config/.storage/core.config_entries` in an editor.
+2. Open the file in the same terminal window:
+
+   ```bash
+   nano /config/.storage/core.config_entries
+   ```
+
 3. Find the entry that has `"domain": "concept2"`.
 4. Find the line `"access_token"` in that entry.
 5. Add the letter `x` at the end of the token value, before the closing quotation mark.
-6. Save the file.
+6. Press Ctrl+O, then Enter, to save the file.
+7. Press Ctrl+X to close the editor.
 
 Example: change `"access_token": "abc123"` to `"access_token": "abc123x"`.
 
@@ -111,6 +122,12 @@ If the prompt does not appear, go to **Troubleshooting**.
 8. Make sure the form closes with no error.
 
 **Expected result:** The integration rejects the wrong token and keeps the old token.
+
+## If the terminal stops working
+
+1. Connect with SSH from your computer, or attach a keyboard and screen to the host.
+2. Log in as `root`.
+3. Enter `ha core start`.
 
 ## Troubleshooting
 
