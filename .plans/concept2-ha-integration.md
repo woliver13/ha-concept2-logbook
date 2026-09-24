@@ -175,9 +175,9 @@ UX appearing correctly — worth one real confirmation with an actually-revoked 
 
 ### Acceptance criteria
 
-- [ ] `afk` A simulated 401 triggers HA's reauth flow, and submitting a valid token through that
+- [x] `afk` A simulated 401 triggers HA's reauth flow, and submitting a valid token through that
       flow resolves it, leaving the existing device/entities intact (automated test).
-- [ ] `afk` The options flow accepts a new token, validates it with the same logic as initial
+- [x] `afk` The options flow accepts a new token, validates it with the same logic as initial
       setup, and updates the config entry without removing/re-adding the integration (automated
       test).
 - [ ] `hitl` On the real HA instance, revoke or regenerate the real Concept2 token so the next
