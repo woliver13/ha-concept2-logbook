@@ -149,7 +149,7 @@ the configured time in production.
       test using time-freezing/time-travel, not a real-time wait).
 - [x] `hitl` On the real HA instance, press the dashboard refresh button after logging a new row
       and confirm the sensors update within a few seconds.
-- [ ] `hitl` Leave the integration running overnight at least once and confirm the nightly poll
+- [x] `hitl` Leave the integration running overnight at least once and confirm the nightly poll
       actually fires at the configured wall-clock time (via logs or an updated `last_updated`).
 
 ---
