@@ -1,0 +1,66 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Enter the personal access token from log.concept2.com → Edit Profile → Applications → Connect to Concept2 Logbook API.",
+        "data": {
+          "access_token": "Access token"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate Concept2 Logbook",
+        "description": "Your Concept2 access token is no longer valid. Enter a new personal access token from log.concept2.com → Edit Profile → Applications → Connect to Concept2 Logbook API.",
+        "data": {
+          "access_token": "Access token"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid or expired access token.",
+      "cannot_connect": "Could not connect to the Concept2 Logbook API.",
+      "unknown": "Unexpected error.",
+      "wrong_account": "This token belongs to a different Concept2 account."
+    },
+    "abort": {
+      "already_configured": "This Concept2 account is already configured.",
+      "reauth_successful": "Access token updated."
+    }
+  },
+  "entity": {
+    "button": {
+      "refresh": {
+        "name": "Refresh"
+      }
+    },
+    "sensor": {
+      "last_workout_date": {
+        "name": "Last workout date"
+      },
+      "last_workout_distance": {
+        "name": "Last workout distance"
+      },
+      "last_workout_duration": {
+        "name": "Last workout duration"
+      },
+      "days_since_last_workout": {
+        "name": "Days since last workout"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Enter a new personal access token for this Concept2 account.",
+        "data": {
+          "access_token": "Access token"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid or expired access token.",
+      "cannot_connect": "Could not connect to the Concept2 Logbook API.",
+      "unknown": "Unexpected error.",
+      "wrong_account": "This token belongs to a different Concept2 account."
+    }
+  }
+}

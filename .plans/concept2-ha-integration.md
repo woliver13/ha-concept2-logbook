@@ -67,14 +67,14 @@ and real API round-trip actually work together.
 
 ### Acceptance criteria
 
-- [ ] `afk` Config flow rejects an invalid/expired token with `invalid_auth` and rejects an
+- [x] `afk` Config flow rejects an invalid/expired token with `invalid_auth` and rejects an
       unreachable API with `cannot_connect` (mocked API, automated test).
-- [ ] `afk` Config flow succeeds with a valid mocked token and creates a config entry keyed by
+- [x] `afk` Config flow succeeds with a valid mocked token and creates a config entry keyed by
       the Concept2 user id; a second attempt for the same user id is rejected as a duplicate
       (automated test).
-- [ ] `afk` `last_workout_date` reports `unknown` when the mocked API returns zero `rower`
+- [x] `afk` `last_workout_date` reports `unknown` when the mocked API returns zero `rower`
       results, and reports the correct timestamp when one exists (automated test).
-- [ ] `hitl` Install the integration on the real HA instance, enter a real Concept2 personal
+- [x] `hitl` Install the integration on the real HA instance, enter a real Concept2 personal
       access token, and confirm the config flow succeeds and the device/sensor appear in
       Settings → Devices & Services.
 
@@ -106,16 +106,16 @@ logged row, since automated tests can't confirm the values "look right" in the a
 
 ### Acceptance criteria
 
-- [ ] `afk` `last_workout_distance` and `last_workout_duration` report correct values, units,
+- [x] `afk` `last_workout_distance` and `last_workout_duration` report correct values, units,
       and `device_class`/`state_class` against a mocked `rower` result (automated test).
-- [ ] `afk` `days_since_last_workout` is correct across a local-timezone midnight boundary and
+- [x] `afk` `days_since_last_workout` is correct across a local-timezone midnight boundary and
       reports `0` for a same-day workout (automated test, time-frozen).
-- [ ] `afk` A mocked API response containing `bike`/`ski` results alongside `rower` results does
+- [x] `afk` A mocked API response containing `bike`/`ski` results alongside `rower` results does
       not change any sensor's value (automated test).
-- [ ] `afk` `calories_total`, `stroke_count`, `stroke_rate`, and `drag_factor` appear as extra
+- [x] `afk` `calories_total`, `stroke_count`, `stroke_rate`, and `drag_factor` appear as extra
       attributes on `last_workout_date` (automated test).
-- [ ] `afk` All four sensors report `unknown` when zero `rower` results exist (automated test).
-- [ ] `hitl` On the real HA instance, with a real logged rowing result, visually confirm all
+- [x] `afk` All four sensors report `unknown` when zero `rower` results exist (automated test).
+- [x] `hitl` On the real HA instance, with a real logged rowing result, visually confirm all
       four sensors and the extra attributes show correct, sensible values in the HA UI.
 
 ---
@@ -143,13 +143,13 @@ the configured time in production.
 
 ### Acceptance criteria
 
-- [ ] `afk` Pressing the refresh button triggers an immediate coordinator refresh, verified by
+- [x] `afk` Pressing the refresh button triggers an immediate coordinator refresh, verified by
       an incremented mock API call count (automated test).
-- [ ] `afk` The fixed nightly trigger fires a refresh at the configured local time (automated
+- [x] `afk` The fixed nightly trigger fires a refresh at the configured local time (automated
       test using time-freezing/time-travel, not a real-time wait).
-- [ ] `hitl` On the real HA instance, press the dashboard refresh button after logging a new row
+- [x] `hitl` On the real HA instance, press the dashboard refresh button after logging a new row
       and confirm the sensors update within a few seconds.
-- [ ] `hitl` Leave the integration running overnight at least once and confirm the nightly poll
+- [x] `hitl` Leave the integration running overnight at least once and confirm the nightly poll
       actually fires at the configured wall-clock time (via logs or an updated `last_updated`).
 
 ---
@@ -175,12 +175,12 @@ UX appearing correctly — worth one real confirmation with an actually-revoked 
 
 ### Acceptance criteria
 
-- [ ] `afk` A simulated 401 triggers HA's reauth flow, and submitting a valid token through that
+- [x] `afk` A simulated 401 triggers HA's reauth flow, and submitting a valid token through that
       flow resolves it, leaving the existing device/entities intact (automated test).
-- [ ] `afk` The options flow accepts a new token, validates it with the same logic as initial
+- [x] `afk` The options flow accepts a new token, validates it with the same logic as initial
       setup, and updates the config entry without removing/re-adding the integration (automated
       test).
-- [ ] `hitl` On the real HA instance, revoke or regenerate the real Concept2 token so the next
+- [x] `hitl` On the real HA instance, revoke or regenerate the real Concept2 token so the next
       poll gets a real 401, and confirm the reauth prompt actually appears under Settings →
       Devices & Services.
 

@@ -11,7 +11,7 @@ to a PM5 monitor over Bluetooth for real-time, in-progress workout data.
 
 ## Features
 
-- Polls your Concept2 Logbook account once nightly, plus on demand via a refresh button.
+- Polls your Concept2 Logbook account once nightly at 3:00 AM (your Home Assistant local time), plus on demand via a refresh button.
 - Only considers indoor **rower** results — bike and SkiErg entries in your logbook are ignored
   so they don't affect these sensors.
 - Your access token is entered through Home Assistant's own setup UI and stored in HA's
@@ -33,7 +33,8 @@ If you haven't logged a rowing result yet, these sensors report `unknown` until 
 
 - A Concept2 Logbook account with at least one logged rowing result.
 - A personal access token: log in at [log.concept2.com](https://log.concept2.com) → **Edit
-  Profile** → **Applications** tab → **Connect to Concept2 Logbook API**.
+  Profile** → **Applications** (in the menu on the left) → **Concept2 Logbook API** → **View
+  Token**. See [Get, replace, or revoke your Concept2 access token](docs/concept2-api-token.md).
 - Home Assistant Core, recent enough to support standard config flow / reauth / repair issue
   APIs (developed against 2026.9.x).
 
