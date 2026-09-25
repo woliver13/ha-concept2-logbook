@@ -180,7 +180,7 @@ UX appearing correctly — worth one real confirmation with an actually-revoked 
 - [x] `afk` The options flow accepts a new token, validates it with the same logic as initial
       setup, and updates the config entry without removing/re-adding the integration (automated
       test).
-- [ ] `hitl` On the real HA instance, revoke or regenerate the real Concept2 token so the next
+- [x] `hitl` On the real HA instance, revoke or regenerate the real Concept2 token so the next
       poll gets a real 401, and confirm the reauth prompt actually appears under Settings →
       Devices & Services.
 

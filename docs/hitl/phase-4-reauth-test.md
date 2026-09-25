@@ -1,109 +1,69 @@
 # Test the reauth prompt (Phase 4 HITL)
 
 This procedure shows that Home Assistant asks for a new token when the Concept2 API rejects the old token.
-It uses a token with an extra character. You do not revoke your real token.
-You do not need a second Concept2 account.
+You regenerate your real token on the Concept2 website. The old token stops working.
+Home Assistant then shows the reauth prompt.
 
 ## Before you start
 
 You need:
 
-- Access to your Home Assistant OS instance with the Concept2 Logbook integration installed.
-- Your real Concept2 access token.
-- The Terminal & SSH add-on.
-- A second way to reach the host if the add-on stops working: SSH from your computer, or a keyboard and screen on the host.
+- Access to your Home Assistant instance with the Concept2 Logbook integration installed.
+- The Phase 4 version of the integration files. The files must include the reauth flow.
+- A Concept2 Logbook account that has a personal access token.
 
 Time to complete: 10 minutes.
 
-> **WARNING:** Do not edit `core.config_entries` while Home Assistant Core runs.
-> Home Assistant overwrites your change when it stops.
-
-> **WARNING:** When Core stops, the web interface and its add-on panels stop.
-> Do the whole procedure in one terminal window. Do not close this window until Core runs again.
-> Do not use the File editor add-on. It does not work while Core is stopped.
+> **WARNING:** This procedure makes your old token invalid. Home Assistant stops getting data until you enter the new token.
 
 ## Procedure
 
-### 1. Make a backup
+### 1. Regenerate the token
 
-1. Go to **Settings → System → Backups**.
-2. Select **Create backup**.
-3. Select **Create**.
-4. Wait for the backup to finish.
+1. Go to [log.concept2.com](https://log.concept2.com) and log in.
+2. Select the user icon at the top right of the page.
+3. Select **Edit Profile**.
+4. In the menu on the left, select **Applications**.
+5. Under **Concept2 Logbook API**, select **View Token**.
+6. Select **Regenerate Token**.
+7. Copy the new token.
 
-### 2. Stop Home Assistant Core
+### 2. Cause a failed update
 
-1. Open the Terminal & SSH add-on.
-2. Enter this command:
+1. Go to **Settings → Devices & Services → Concept2 Logbook**.
+2. Select the **Refresh** button.
 
-   ```bash
-   ha core stop
-   ```
+The Concept2 API rejects the old token with a 401 error.
 
-3. Wait until the command finishes.
-
-### 3. Break the token
-
-1. Enter this command to make a copy of the file:
-
-   ```bash
-   cp /config/.storage/core.config_entries /config/.storage/core.config_entries.bak
-   ```
-
-2. Open the file in the same terminal window:
-
-   ```bash
-   nano /config/.storage/core.config_entries
-   ```
-
-3. Find the entry that has `"domain": "concept2"`.
-4. Find the line `"access_token"` in that entry.
-5. Add the letter `x` at the end of the token value, before the closing quotation mark.
-6. Press Ctrl+O, then Enter, to save the file.
-7. Press Ctrl+X to close the editor.
-
-Example: change `"access_token": "abc123"` to `"access_token": "abc123x"`.
-
-### 4. Start Home Assistant Core
-
-1. Enter this command:
-
-   ```bash
-   ha core start
-   ```
-
-2. Wait 2 minutes for Home Assistant to start.
-
-### 5. Confirm the reauth prompt
+### 3. Confirm the reauth prompt
 
 1. Go to **Settings → Devices & Services**.
 2. Find the **Concept2 Logbook** card.
 3. Make sure the card shows **Reconfigure** or **Action needed**.
-4. Make sure the notification list shows a message that asks you to reauthenticate.
 
 **Expected result:** The prompt appears. This is the result the acceptance criterion requires.
 
 If the prompt does not appear, go to **Troubleshooting**.
 
-### 6. Complete the reauth flow
+### 4. Complete the reauth flow
 
 1. Select **Reconfigure** on the Concept2 Logbook card.
-2. Enter your real Concept2 access token.
+2. Paste the new token.
 3. Select **Submit**.
 4. Make sure a message shows that Home Assistant updated the access token.
 
-### 7. Confirm that nothing is lost
+### 5. Confirm that nothing is lost
 
 1. Go to **Settings → Devices & Services → Concept2 Logbook**.
 2. Make sure the integration shows only one device.
-3. Make sure the four sensors are present.
+3. Make sure the four sensors show values.
 4. Select the **Refresh** button.
 5. Make sure the sensors show correct values.
 6. Make sure the "Action needed" message is gone.
 
 **Expected result:** The device and sensors are the same as before the test.
 
-### 8. Record the result
+### 6. Record the result
 
 1. Open `.plans/concept2-ha-integration.md` in this repository.
 2. Find the Phase 4 item that starts with "On the real HA instance, revoke or regenerate".
@@ -123,33 +83,14 @@ If the prompt does not appear, go to **Troubleshooting**.
 
 **Expected result:** The integration rejects the wrong token and keeps the old token.
 
-## If the terminal stops working
-
-1. Connect with SSH from your computer, or attach a keyboard and screen to the host.
-2. Log in as `root`.
-3. Enter `ha core start`.
-
 ## Troubleshooting
 
 | Problem | Cause | Action |
 |---|---|---|
-| No prompt appears | The edit did not save, or Home Assistant was running during the edit | Repeat steps 2 to 4. |
-| The integration does not load and shows no prompt | The JSON file is not valid | Copy `core.config_entries.bak` over `core.config_entries`. Repeat from step 3. |
+| No **Reconfigure** option appears | The installed files do not have the Phase 4 code | Copy the Phase 4 `custom_components/concept2` folder to Home Assistant. Restart Home Assistant. Select **Refresh** again. |
+| The prompt does not appear after **Refresh** | Home Assistant did not restart after the file copy | Restart Home Assistant. Select **Refresh** again. |
+| The form shows "Invalid or expired access token" | You did not copy the complete token | Copy the token again from the **Applications** page. |
 | The form shows "different Concept2 account" | You entered a token for another account | Enter the token for the account that you used at setup. |
-| Home Assistant does not start | The JSON file is not valid | Copy `core.config_entries.bak` over `core.config_entries`. Then enter `ha core start`. |
-
-## Restore the original file
-
-If you must undo the test, do these steps:
-
-1. Enter `ha core stop`.
-2. Enter this command:
-
-   ```bash
-   cp /config/.storage/core.config_entries.bak /config/.storage/core.config_entries
-   ```
-
-3. Enter `ha core start`.
 
 ## Not tested here
 
