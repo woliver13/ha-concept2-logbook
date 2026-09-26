@@ -11,7 +11,7 @@ Build a private Home Assistant custom integration (`custom_components/concept2/`
 - Developer background: C# / clean architecture. Map HA integration concepts accordingly — DataUpdateCoordinator ≈ repository/data-access layer, sensor.py ≈ presentation layer, config_flow.py ≈ setup/DI wiring.
 
 ## API details (already verified working)
-- Concept2 Logbook API, personal access token generated via: log.concept2.com → Edit Profile → Applications tab → "Connect to Concept2 Logbook API"
+- Concept2 Logbook API, personal access token generated via: log.concept2.com → Edit Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token
 - Base endpoint confirmed working: `GET https://log.concept2.com/api/users/me/results` with header `Authorization: Bearer <token>`
 - Confirmed real response shape includes: `id`, `date`, `distance`, `time` (in tenths of a second, e.g. 12000 = 20:00.0), `type` (e.g. "rower"), `stroke_count`, `stroke_rate`, `calories_total`, `drag_factor`, and a `workout.splits` array with per-split detail.
 - Pagination via `meta.pagination` (per_page defaults to 50).
