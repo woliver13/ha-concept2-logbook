@@ -1,10 +1,12 @@
 """Tests for the Concept2 Logbook API client."""
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from homeassistant.core import HomeAssistant
 
-from custom_components.concept2.api import Concept2ApiClient
+from custom_components.concept2.api import Concept2ApiClient, Concept2ConnectionError
 
 REQUEST_PATH = "custom_components.concept2.api.Concept2ApiClient._request"
 
@@ -65,3 +67,25 @@ async def test_no_rower_results_returns_none(hass: HomeAssistant) -> None:
         result = await client.async_get_latest_rower_result()
 
     assert result is None
+
+
+async def test_timeout_is_reported_as_a_connection_error(hass: HomeAssistant) -> None:
+    """A request timeout (not an aiohttp.ClientError) is still a connection error."""
+    client = Concept2ApiClient(hass, "token")
+    client._session = MagicMock()
+    client._session.get.side_effect = TimeoutError()
+
+    with pytest.raises(Concept2ConnectionError):
+        await client.async_get_latest_rower_result()
+
+
+async def test_server_error_is_reported_as_a_connection_error(hass: HomeAssistant) -> None:
+    """A 5xx response is a connection error, not an auth error."""
+    response = MagicMock(status=503)
+    client = Concept2ApiClient(hass, "token")
+    client._session = MagicMock()
+    client._session.get.return_value.__aenter__ = AsyncMock(return_value=response)
+    client._session.get.return_value.__aexit__ = AsyncMock(return_value=False)
+
+    with pytest.raises(Concept2ConnectionError):
+        await client.async_get_latest_rower_result()

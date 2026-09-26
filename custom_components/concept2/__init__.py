@@ -7,10 +7,11 @@ from datetime import datetime
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ACCESS_TOKEN, Platform
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.event import async_track_time_change
 
 from .api import Concept2ApiClient
-from .const import NIGHTLY_REFRESH_HOUR, NIGHTLY_REFRESH_MINUTE
+from .const import DOMAIN, NIGHTLY_REFRESH_HOUR, NIGHTLY_REFRESH_MINUTE
 from .coordinator import Concept2DataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [Platform.BUTTON, Platform.SENSOR]
@@ -55,3 +56,8 @@ async def _async_reload_on_update(hass: HomeAssistant, entry: ConfigEntry) -> No
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Remove the poll-failure repair issue when the integration is removed."""
+    ir.async_delete_issue(hass, DOMAIN, f"poll_failing_{entry.entry_id}")

@@ -207,11 +207,11 @@ the only way to confirm HA's real Repairs UI surfaces the issue as expected.
 
 ### Acceptance criteria
 
-- [ ] `afk` A single failed poll (mocked timeout/5xx) raises `UpdateFailed` while sensors retain
+- [x] `afk` A single failed poll (mocked timeout/5xx) raises `UpdateFailed` while sensors retain
       their last-known values (automated test).
-- [ ] `afk` After exactly 3 consecutive simulated failures, a HA repair issue is created; fewer
+- [x] `afk` After exactly 3 consecutive simulated failures, a HA repair issue is created; fewer
       than 3 does not create one (automated test).
-- [ ] `afk` A successful poll following a raised repair issue clears it and resets the failure
+- [x] `afk` A successful poll following a raised repair issue clears it and resets the failure
       counter (automated test).
 - [ ] `hitl` On the real HA instance, block network access to the Concept2 API for 3+ nightly
       polls and confirm a repair issue actually appears under Settings → Repairs.
