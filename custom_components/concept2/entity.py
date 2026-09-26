@@ -25,3 +25,11 @@ class Concept2Entity(CoordinatorEntity[Concept2DataUpdateCoordinator]):
             name="Concept2 Logbook",
             manufacturer=MANUFACTURER,
         )
+
+    @property
+    def available(self) -> bool:
+        """Stay available after a failed poll so entities keep their last-known values.
+
+        The first refresh must succeed for the entry to load, so there is always a value.
+        """
+        return True

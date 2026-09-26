@@ -207,11 +207,11 @@ the only way to confirm HA's real Repairs UI surfaces the issue as expected.
 
 ### Acceptance criteria
 
-- [ ] `afk` A single failed poll (mocked timeout/5xx) raises `UpdateFailed` while sensors retain
+- [x] `afk` A single failed poll (mocked timeout/5xx) raises `UpdateFailed` while sensors retain
       their last-known values (automated test).
-- [ ] `afk` After exactly 3 consecutive simulated failures, a HA repair issue is created; fewer
+- [x] `afk` After exactly 3 consecutive simulated failures, a HA repair issue is created; fewer
       than 3 does not create one (automated test).
-- [ ] `afk` A successful poll following a raised repair issue clears it and resets the failure
+- [x] `afk` A successful poll following a raised repair issue clears it and resets the failure
       counter (automated test).
 - [ ] `hitl` On the real HA instance, block network access to the Concept2 API for 3+ nightly
       polls and confirm a repair issue actually appears under Settings → Repairs.
@@ -239,9 +239,9 @@ file, actual repo/license/tag state) and can't be meaningfully faked in a unit t
 
 ### Acceptance criteria
 
-- [ ] `afk` The diagnostics payload includes coordinator state and the last raw API response
+- [x] `afk` The diagnostics payload includes coordinator state and the last raw API response
       with the access token string absent/redacted (automated test).
-- [ ] `afk` The full `pytest-homeassistant-custom-component` suite (Phases 1–6) passes.
+- [x] `afk` The full `pytest-homeassistant-custom-component` suite (Phases 1–6) passes.
 - [ ] `hitl` On the real HA instance, use Download Diagnostics and manually inspect the file to
       confirm the token is redacted and nothing else sensitive leaks.
 - [ ] `hitl` Add this repo as a HACS custom repository on the real HA instance and confirm it
