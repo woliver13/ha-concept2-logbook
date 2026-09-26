@@ -62,5 +62,11 @@
       "unknown": "Unexpected error.",
       "wrong_account": "This token belongs to a different Concept2 account."
     }
+  },
+  "issues": {
+    "poll_failing": {
+      "title": "Concept2 Logbook cannot be reached",
+      "description": "The last {failures} attempts to get data from the Concept2 Logbook API failed. The sensors show the last data that Home Assistant received. Home Assistant tries again at the next refresh. To try now, press the Refresh button of the integration. This issue clears after a successful refresh."
+    }
   }
 }

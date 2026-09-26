@@ -79,8 +79,8 @@ class Concept2ApiClient:
                         f"Concept2 API returned status {response.status}"
                     )
                 return await response.json()
-        except aiohttp.ClientError as err:
-            raise Concept2ConnectionError(str(err)) from err
+        except (aiohttp.ClientError, TimeoutError) as err:
+            raise Concept2ConnectionError(str(err) or type(err).__name__) from err
 
 
 def _parse_result(raw: dict[str, Any]) -> Concept2Result:

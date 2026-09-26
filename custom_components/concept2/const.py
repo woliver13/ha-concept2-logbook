@@ -13,3 +13,6 @@ MANUFACTURER = "Concept2"
 # Fixed local wall-clock time of the nightly poll (hour, minute) — deterministic across restarts.
 NIGHTLY_REFRESH_HOUR = 3
 NIGHTLY_REFRESH_MINUTE = 0
+
+# Consecutive failed polls before a repair issue is raised.
+FAILURES_BEFORE_REPAIR_ISSUE = 3
