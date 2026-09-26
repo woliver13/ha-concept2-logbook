@@ -48,6 +48,7 @@ class Concept2ApiClient:
         """Set up the client using HA's shared aiohttp session."""
         self._session = async_get_clientsession(hass)
         self._headers = {"Authorization": f"Bearer {access_token}"}
+        self.last_response: dict[str, Any] | None = None
 
     async def async_get_user_id(self) -> str:
         """Validate the token and return the Concept2 user id."""
@@ -57,6 +58,7 @@ class Concept2ApiClient:
     async def async_get_latest_rower_result(self) -> Concept2Result | None:
         """Return the most recently logged rower result, or None if there isn't one."""
         payload = await self._request("/users/me/results")
+        self.last_response = payload
         results = [
             _parse_result(item)
             for item in payload.get("data", [])

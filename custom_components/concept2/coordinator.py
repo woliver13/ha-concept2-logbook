@@ -38,6 +38,16 @@ class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2Result | None]
         self._consecutive_failures = 0
 
     @property
+    def consecutive_failures(self) -> int:
+        """Return how many polls in a row have failed."""
+        return self._consecutive_failures
+
+    @property
+    def last_raw_response(self) -> dict | None:
+        """Return the last raw results response from the API, if there was one."""
+        return self._client.last_response
+
+    @property
     def issue_id(self) -> str:
         """Return the id of this entry's poll-failure repair issue."""
         return f"poll_failing_{self.config_entry.entry_id}"
