@@ -2,14 +2,14 @@
   "config": {
     "step": {
       "user": {
-        "description": "Enter the personal access token from log.concept2.com → Edit Profile → Applications → Connect to Concept2 Logbook API.",
+        "description": "Enter your personal access token. To find it, go to log.concept2.com → Edit Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token.",
         "data": {
           "access_token": "Access token"
         }
       },
       "reauth_confirm": {
         "title": "Reauthenticate Concept2 Logbook",
-        "description": "Your Concept2 access token is no longer valid. Enter a new personal access token from log.concept2.com → Edit Profile → Applications → Connect to Concept2 Logbook API.",
+        "description": "Your Concept2 access token no longer works. Enter a new personal access token. To find it, go to log.concept2.com → Edit Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token. If you regenerated the token, use the new one.",
         "data": {
           "access_token": "Access token"
         }
@@ -50,7 +50,7 @@
   "options": {
     "step": {
       "init": {
-        "description": "Enter a new personal access token for this Concept2 account.",
+        "description": "Enter a new personal access token for this Concept2 account. To find it, go to log.concept2.com → Edit Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token.",
         "data": {
           "access_token": "Access token"
         }

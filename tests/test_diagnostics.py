@@ -27,6 +27,15 @@ PAYLOAD = {
             "stroke_count": 900,
             "stroke_rate": 24,
             "drag_factor": 128,
+            "workout": {
+                "splits": [
+                    {
+                        "time": 2400,
+                        "distance": 867,
+                        "heart_rate": {"average": 151, "ending": 173},
+                    }
+                ]
+            },
         }
     ]
 }
@@ -56,6 +65,9 @@ async def test_diagnostics_has_state_and_raw_response_without_the_token(
     assert TOKEN not in dumped
     assert "12345" not in dumped
     assert "door code" not in dumped
+    assert "151" not in dumped
+    assert "173" not in dumped
+    assert diagnostics["last_raw_response"]["data"][0]["workout"]["splits"][0]["distance"] == 867
     assert diagnostics["entry"]["data"]["access_token"] == "**REDACTED**"
 
 
