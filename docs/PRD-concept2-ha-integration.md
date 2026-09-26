@@ -23,7 +23,7 @@ separate downstream automation (out of scope here) can alert when the answer is 
   already-logged historical results. The repo name (`ha-concept2-logbook`) is chosen specifically
   to avoid that confusion.
 - The Concept2 Logbook API personal access token is generated via log.concept2.com → Edit
-  Profile → Applications tab → "Connect to Concept2 Logbook API".
+  Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token.
 
 ## 3. Goals
 
