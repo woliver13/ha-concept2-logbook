@@ -11,7 +11,13 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.event import async_track_time_change
 
 from .api import Concept2ApiClient
-from .const import DOMAIN, NIGHTLY_REFRESH_HOUR, NIGHTLY_REFRESH_MINUTE
+from .const import (
+    CONF_REFRESH_HOUR,
+    CONF_REFRESH_MINUTE,
+    DEFAULT_REFRESH_HOUR,
+    DEFAULT_REFRESH_MINUTE,
+    DOMAIN,
+)
 from .coordinator import Concept2DataUpdateCoordinator
 
 PLATFORMS: list[Platform] = [Platform.BUTTON, Platform.SENSOR]
@@ -30,13 +36,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         """Refresh at the fixed nightly time, via the same path as the refresh button."""
         hass.async_create_task(coordinator.async_request_refresh())
 
-    # async_track_time_change matches against HA's configured local time zone.
+    # async_track_time_change matches against HA's configured local time zone. The entry
+    # reloads (see _async_reload_on_update) whenever the options flow changes these, so
+    # this always reflects the current schedule.
     entry.async_on_unload(
         async_track_time_change(
             hass,
             _async_nightly_refresh,
-            hour=NIGHTLY_REFRESH_HOUR,
-            minute=NIGHTLY_REFRESH_MINUTE,
+            hour=entry.options.get(CONF_REFRESH_HOUR, DEFAULT_REFRESH_HOUR),
+            minute=entry.options.get(CONF_REFRESH_MINUTE, DEFAULT_REFRESH_MINUTE),
             second=0,
         )
     )
