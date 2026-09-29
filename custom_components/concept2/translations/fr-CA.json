@@ -1,0 +1,72 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Entrez votre jeton d'accès personnel. Pour le trouver, allez à log.concept2.com → Edit Profile → Applications (dans le menu de gauche) → Concept2 Logbook API → View Token.",
+        "data": {
+          "access_token": "Jeton d'accès"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Réauthentifier Concept2 Logbook",
+        "description": "Votre jeton d'accès Concept2 ne fonctionne plus. Entrez un nouveau jeton d'accès personnel. Pour le trouver, allez à log.concept2.com → Edit Profile → Applications (dans le menu de gauche) → Concept2 Logbook API → View Token. Si vous avez régénéré le jeton, utilisez le nouveau.",
+        "data": {
+          "access_token": "Jeton d'accès"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Jeton d'accès invalide ou expiré.",
+      "cannot_connect": "Impossible de se connecter à l'API Concept2 Logbook.",
+      "unknown": "Erreur inattendue.",
+      "wrong_account": "Ce jeton appartient à un autre compte Concept2."
+    },
+    "abort": {
+      "already_configured": "Ce compte Concept2 est déjà configuré.",
+      "reauth_successful": "Jeton d'accès mis à jour."
+    }
+  },
+  "entity": {
+    "button": {
+      "refresh": {
+        "name": "Actualiser"
+      }
+    },
+    "sensor": {
+      "last_workout_date": {
+        "name": "Date du dernier entraînement"
+      },
+      "last_workout_distance": {
+        "name": "Distance du dernier entraînement"
+      },
+      "last_workout_duration": {
+        "name": "Durée du dernier entraînement"
+      },
+      "days_since_last_workout": {
+        "name": "Jours depuis le dernier entraînement"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Entrez un nouveau jeton d'accès personnel pour ce compte Concept2. Pour le trouver, allez à log.concept2.com → Edit Profile → Applications (dans le menu de gauche) → Concept2 Logbook API → View Token.",
+        "data": {
+          "access_token": "Jeton d'accès"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Jeton d'accès invalide ou expiré.",
+      "cannot_connect": "Impossible de se connecter à l'API Concept2 Logbook.",
+      "unknown": "Erreur inattendue.",
+      "wrong_account": "Ce jeton appartient à un autre compte Concept2."
+    }
+  },
+  "issues": {
+    "poll_failing": {
+      "title": "Impossible de joindre Concept2 Logbook",
+      "description": "Les {failures} dernières tentatives d'obtention de données de l'API Concept2 Logbook ont échoué. Les capteurs affichent les dernières données reçues par Home Assistant. Home Assistant réessaie à la prochaine actualisation. Pour réessayer maintenant, appuyez sur le bouton Actualiser de l'intégration. Ce problème se résout après une actualisation réussie."
+    }
+  }
+}
