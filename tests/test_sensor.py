@@ -7,6 +7,7 @@ from homeassistant.const import STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.util import dt as dt_util
+from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
 
 from custom_components.concept2.api import Concept2Result
 from custom_components.concept2.const import DOMAIN
@@ -130,6 +131,27 @@ async def test_last_workout_distance_and_duration_populated(
     assert duration_state.attributes["unit_of_measurement"] == "s"
     assert duration_state.attributes["device_class"] == "duration"
     assert duration_state.attributes["state_class"] == "measurement"
+
+
+async def test_last_workout_distance_stays_meters_under_us_customary_units(
+    hass: HomeAssistant, mock_config_entry
+) -> None:
+    """The distance sensor stays in meters even when HA's unit system is US customary.
+
+    Without an explicit suggested_unit_of_measurement, HA's sensor unit-conversion
+    would otherwise default a newly-registered DISTANCE sensor to miles/feet under
+    an imperial unit system.
+    """
+    hass.config.units = US_CUSTOMARY_SYSTEM
+    workout_date = dt_util.as_utc(datetime(2026, 9, 15, 8, 0, 0))
+    result = _make_result(workout_date)
+    await _setup_entry(hass, mock_config_entry, result)
+
+    distance_id = _entity_id(hass, mock_config_entry, "last_workout_distance")
+    distance_state = hass.states.get(distance_id)
+    assert distance_state is not None
+    assert distance_state.attributes["unit_of_measurement"] == "m"
+    assert distance_state.state == "6000"
 
 
 async def test_days_since_last_workout_same_day(

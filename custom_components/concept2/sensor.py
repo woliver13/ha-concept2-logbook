@@ -77,6 +77,7 @@ class Concept2LastWorkoutDistanceSensor(Concept2Entity, SensorEntity):
     _attr_device_class = SensorDeviceClass.DISTANCE
     _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_native_unit_of_measurement = UnitOfLength.METERS
+    _attr_suggested_unit_of_measurement = UnitOfLength.METERS
 
     def __init__(
         self, coordinator: Concept2DataUpdateCoordinator, entry: ConfigEntry
