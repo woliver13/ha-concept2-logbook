@@ -1,6 +1,8 @@
 # Loop instructions
-1. Pick an open issue that is NOT: hitl-only, blocked by another open issue,
-   already has an open PR/branch, or is a large multi-session feature.
+1. Pick an open issue that does NOT have the `hitl-blocked`, `blocked`, or
+   `post-mvp` label (`gh issue list --repo woliver13/ha-concept2-logbook
+   --state open` and check labels, rather than reading every issue body).
+   Also skip it if it already has an open PR/branch.
    If nothing qualifies, stop and report that instead of picking anyway.
 2. Create a branch off develop named `<issue#>-<short-slug>`.
 3. Address the issue. Define acceptance criteria in the PR description
@@ -13,4 +15,7 @@
 6. Commit, push the branch, and open a PR back to develop.
    Use `Refs #N` if any hitl criteria remain open, `Closes #N` only if
    every criterion is met.
-7. Notify me with the PR link and a list of any hitl criteria left open.
+7. If any hitl criteria remain open, add the `hitl-blocked` label to the
+   issue (`gh issue edit <N> --add-label hitl-blocked`) so the label stays
+   accurate for the next loop iteration.
+8. Notify me with the PR link and a list of any hitl criteria left open.
