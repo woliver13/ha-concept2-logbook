@@ -50,9 +50,11 @@
   "options": {
     "step": {
       "init": {
-        "description": "Ingresa un nuevo token de acceso personal para esta cuenta de Concept2. Para encontrarlo, ve a log.concept2.com → Edit Profile → Applications (en el menú de la izquierda) → Concept2 Logbook API → View Token.",
+        "description": "Ingresa un nuevo token de acceso personal para esta cuenta de Concept2. Para encontrarlo, ve a log.concept2.com → Edit Profile → Applications (en el menú de la izquierda) → Concept2 Logbook API → View Token. También puedes cambiar la hora de la actualización nocturna abajo.",
         "data": {
-          "access_token": "Token de acceso"
+          "access_token": "Token de acceso",
+          "refresh_hour": "Hora de la actualización nocturna (0-23, hora local)",
+          "refresh_minute": "Minuto de la actualización nocturna (0-59)"
         }
       }
     },

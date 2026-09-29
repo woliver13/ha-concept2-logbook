@@ -10,9 +10,14 @@ ROWER_RESULT_TYPE = "rower"
 
 MANUFACTURER = "Concept2"
 
-# Fixed local wall-clock time of the nightly poll (hour, minute) — deterministic across restarts.
-NIGHTLY_REFRESH_HOUR = 3
-NIGHTLY_REFRESH_MINUTE = 0
+# Options-flow keys for the user-configurable nightly poll time.
+CONF_REFRESH_HOUR = "refresh_hour"
+CONF_REFRESH_MINUTE = "refresh_minute"
+
+# Default local wall-clock time of the nightly poll (hour, minute), used until the user
+# sets their own via the options flow — deterministic across restarts.
+DEFAULT_REFRESH_HOUR = 3
+DEFAULT_REFRESH_MINUTE = 0
 
 # Consecutive failed polls before a repair issue is raised.
 FAILURES_BEFORE_REPAIR_ISSUE = 3
