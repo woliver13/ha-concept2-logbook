@@ -13,9 +13,33 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 
 from .api import Concept2ApiClient, Concept2ApiError, Concept2AuthError, Concept2ConnectionError
-from .const import DOMAIN, LOGGER
+from .const import (
+    CONF_REFRESH_HOUR,
+    CONF_REFRESH_MINUTE,
+    DEFAULT_REFRESH_HOUR,
+    DEFAULT_REFRESH_MINUTE,
+    DOMAIN,
+    LOGGER,
+)
 
 STEP_TOKEN_DATA_SCHEMA = vol.Schema({vol.Required(CONF_ACCESS_TOKEN): str})
+
+
+def _options_schema(entry: ConfigEntry) -> vol.Schema:
+    """Build the options-flow schema, defaulting the schedule fields to the entry's current values."""
+    return vol.Schema(
+        {
+            vol.Required(CONF_ACCESS_TOKEN): str,
+            vol.Optional(
+                CONF_REFRESH_HOUR,
+                default=entry.options.get(CONF_REFRESH_HOUR, DEFAULT_REFRESH_HOUR),
+            ): vol.All(vol.Coerce(int), vol.Range(min=0, max=23)),
+            vol.Optional(
+                CONF_REFRESH_MINUTE,
+                default=entry.options.get(CONF_REFRESH_MINUTE, DEFAULT_REFRESH_MINUTE),
+            ): vol.All(vol.Coerce(int), vol.Range(min=0, max=59)),
+        }
+    )
 
 
 async def _async_validate_token(
@@ -127,7 +151,7 @@ class Concept2OptionsFlow(OptionsFlow):
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Validate and store a new access token."""
+        """Validate and store a new access token, and/or a new nightly poll time."""
         errors: dict[str, str] = {}
 
         if user_input is not None:
@@ -137,13 +161,25 @@ class Concept2OptionsFlow(OptionsFlow):
             if error:
                 errors["base"] = error
             else:
-                # The entry's update listener reloads it with the new token.
+                # The entry's update listener reloads it with the new token and schedule.
                 self.hass.config_entries.async_update_entry(
                     self._entry,
                     data={**self._entry.data, CONF_ACCESS_TOKEN: user_input[CONF_ACCESS_TOKEN]},
                 )
-                return self.async_create_entry(title="", data={})
+                return self.async_create_entry(
+                    title="",
+                    data={
+                        CONF_REFRESH_HOUR: user_input.get(
+                            CONF_REFRESH_HOUR,
+                            self._entry.options.get(CONF_REFRESH_HOUR, DEFAULT_REFRESH_HOUR),
+                        ),
+                        CONF_REFRESH_MINUTE: user_input.get(
+                            CONF_REFRESH_MINUTE,
+                            self._entry.options.get(CONF_REFRESH_MINUTE, DEFAULT_REFRESH_MINUTE),
+                        ),
+                    },
+                )
 
         return self.async_show_form(
-            step_id="init", data_schema=STEP_TOKEN_DATA_SCHEMA, errors=errors
+            step_id="init", data_schema=_options_schema(self._entry), errors=errors
         )

@@ -11,7 +11,7 @@ to a PM5 monitor over Bluetooth for real-time, in-progress workout data.
 
 ## Features
 
-- Polls your Concept2 Logbook account once nightly at 3:00 AM (your Home Assistant local time), plus on demand via a refresh button.
+- Polls your Concept2 Logbook account once nightly, by default at 3:00 AM (your Home Assistant local time), plus on demand via a refresh button. Change the nightly poll time under the integration's **Configure** option.
 - Only considers indoor **rower** results — bike and SkiErg entries in your logbook are ignored
   so they don't affect these sensors.
 - Your access token is entered through Home Assistant's own setup UI and stored in HA's

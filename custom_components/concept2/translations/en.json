@@ -50,9 +50,11 @@
   "options": {
     "step": {
       "init": {
-        "description": "Enter a new personal access token for this Concept2 account. To find it, go to log.concept2.com → Edit Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token.",
+        "description": "Enter a new personal access token for this Concept2 account. To find it, go to log.concept2.com → Edit Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token. You can also change the nightly poll time below.",
         "data": {
-          "access_token": "Access token"
+          "access_token": "Access token",
+          "refresh_hour": "Nightly poll hour (0-23, local time)",
+          "refresh_minute": "Nightly poll minute (0-59)"
         }
       }
     },
