@@ -17,13 +17,14 @@ You need:
 
 ## Get your token
 
-1. Go to [log.concept2.com](https://log.concept2.com) and log in.
-2. Select the user icon at the top right of the page.
-3. Select **Edit Profile**.
-4. In the menu on the left, select **Applications**.
-5. Find **Concept2 Logbook API** under **Connected**.
-6. Select **View Token**.
-7. Copy the token.
+1. Go to [log.concept2.com](https://log.concept2.com).
+2. Log in.
+3. Select the user icon at the top right of the page.
+4. Select **Edit Profile**.
+5. In the menu on the left, select **Applications**.
+6. Find **Concept2 Logbook API** under **Connected**.
+7. Select **View Token**.
+8. Copy the token.
 
 <!-- VERIFY: If no token exists yet, the Applications page shows Concept2 Logbook API under "Connect" with a "Connect to Concept2 Logbook API" button. Confirm the name and add a step. -->
 
@@ -37,7 +38,7 @@ Now enter the token in Home Assistant:
 
 ## Replace your token
 
-Do this when you think that someone else has your token. You can also do this to rotate your token on a schedule.
+Do this if someone else has your token. You can also do this to rotate your token on a schedule.
 
 > **WARNING:** Concept2 does not ask you to confirm. The old token stops working when you select **Regenerate Token**.
 
