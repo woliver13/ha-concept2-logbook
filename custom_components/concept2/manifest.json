@@ -7,5 +7,5 @@
   "issue_tracker": "https://github.com/woliver13/ha-concept2-logbook/issues",
   "iot_class": "cloud_polling",
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.1.2"
 }

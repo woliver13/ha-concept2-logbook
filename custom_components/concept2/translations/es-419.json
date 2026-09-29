@@ -1,0 +1,72 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Ingresa tu token de acceso personal. Para encontrarlo, ve a log.concept2.com → Edit Profile → Applications (en el menú de la izquierda) → Concept2 Logbook API → View Token.",
+        "data": {
+          "access_token": "Token de acceso"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reautenticar Concept2 Logbook",
+        "description": "Tu token de acceso de Concept2 ya no funciona. Ingresa un nuevo token de acceso personal. Para encontrarlo, ve a log.concept2.com → Edit Profile → Applications (en el menú de la izquierda) → Concept2 Logbook API → View Token. Si regeneraste el token, usa el nuevo.",
+        "data": {
+          "access_token": "Token de acceso"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Token de acceso inválido o expirado.",
+      "cannot_connect": "No se pudo conectar con la API de Concept2 Logbook.",
+      "unknown": "Error inesperado.",
+      "wrong_account": "Este token pertenece a una cuenta de Concept2 diferente."
+    },
+    "abort": {
+      "already_configured": "Esta cuenta de Concept2 ya está configurada.",
+      "reauth_successful": "Token de acceso actualizado."
+    }
+  },
+  "entity": {
+    "button": {
+      "refresh": {
+        "name": "Actualizar"
+      }
+    },
+    "sensor": {
+      "last_workout_date": {
+        "name": "Fecha del último entrenamiento"
+      },
+      "last_workout_distance": {
+        "name": "Distancia del último entrenamiento"
+      },
+      "last_workout_duration": {
+        "name": "Duración del último entrenamiento"
+      },
+      "days_since_last_workout": {
+        "name": "Días desde el último entrenamiento"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "description": "Ingresa un nuevo token de acceso personal para esta cuenta de Concept2. Para encontrarlo, ve a log.concept2.com → Edit Profile → Applications (en el menú de la izquierda) → Concept2 Logbook API → View Token.",
+        "data": {
+          "access_token": "Token de acceso"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Token de acceso inválido o expirado.",
+      "cannot_connect": "No se pudo conectar con la API de Concept2 Logbook.",
+      "unknown": "Error inesperado.",
+      "wrong_account": "Este token pertenece a una cuenta de Concept2 diferente."
+    }
+  },
+  "issues": {
+    "poll_failing": {
+      "title": "No se puede acceder a Concept2 Logbook",
+      "description": "Los últimos {failures} intentos de obtener datos de la API de Concept2 Logbook fallaron. Los sensores muestran los últimos datos que Home Assistant recibió. Home Assistant lo intenta de nuevo en la siguiente actualización. Para intentarlo ahora, presiona el botón Actualizar de la integración. Este problema se resuelve después de una actualización exitosa."
+    }
+  }
+}
