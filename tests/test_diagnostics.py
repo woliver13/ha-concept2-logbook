@@ -56,6 +56,8 @@ async def test_diagnostics_has_state_and_raw_response_without_the_token(
     assert coordinator["last_update_success"] is True
     assert coordinator["consecutive_failures"] == 0
     assert coordinator["data"]["latest"]["distance_meters"] == 6000
+    assert coordinator["data"]["latest"]["heart_rate_avg"] == "**REDACTED**"
+    assert coordinator["data"]["latest"]["heart_rate_ending"] == "**REDACTED**"
 
     raw_result = diagnostics["last_raw_response"]["data"][0]
     assert raw_result["distance"] == 6000

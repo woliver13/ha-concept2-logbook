@@ -21,3 +21,15 @@ DEFAULT_REFRESH_MINUTE = 0
 
 # Consecutive failed polls before a repair issue is raised.
 FAILURES_BEFORE_REPAIR_ISSUE = 3
+
+# The new-workout event entity's single event type.
+EVENT_TYPE_WORKOUT_LOGGED = "workout_logged"
+
+# How many seen result ids to keep per config entry, oldest dropped first.
+MAX_SEEN_RESULT_IDS = 50
+
+# Flood guard: at most this many workout_logged events fire from one poll.
+FLOOD_GUARD_MAX_EVENTS_PER_POLL = 10
+
+# Storage schema version for the per-entry seen-results store.
+SEEN_RESULTS_STORAGE_VERSION = 1
