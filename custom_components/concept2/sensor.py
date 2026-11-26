@@ -16,6 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util import dt as dt_util
 
+from .api import pace_500m_seconds
 from .coordinator import Concept2DataUpdateCoordinator
 from .entity import Concept2Entity
 
@@ -32,6 +33,7 @@ async def async_setup_entry(
             Concept2LastWorkoutDateSensor(coordinator, entry),
             Concept2LastWorkoutDistanceSensor(coordinator, entry),
             Concept2LastWorkoutDurationSensor(coordinator, entry),
+            Concept2LastWorkoutPaceSensor(coordinator, entry),
             Concept2DaysSinceLastWorkoutSensor(coordinator, entry),
         ]
     )
@@ -53,20 +55,22 @@ class Concept2LastWorkoutDateSensor(Concept2Entity, SensorEntity):
     @property
     def native_value(self) -> datetime | None:
         """Return the most recent rower result's timestamp, or None if there isn't one."""
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         return result.date if result is not None else None
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return extra API fields not worth a dedicated sensor of their own."""
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         if result is None:
             return None
         return {
+            "result_id": result.result_id,
             "calories_total": result.calories_total,
             "stroke_count": result.stroke_count,
             "stroke_rate": result.stroke_rate,
             "drag_factor": result.drag_factor,
+            "heart_rate_avg": result.heart_rate_avg,
         }
 
 
@@ -89,7 +93,7 @@ class Concept2LastWorkoutDistanceSensor(Concept2Entity, SensorEntity):
     @property
     def native_value(self) -> float | None:
         """Return the most recent rower result's distance, or None if there isn't one."""
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         return result.distance_meters if result is not None else None
 
 
@@ -111,8 +115,30 @@ class Concept2LastWorkoutDurationSensor(Concept2Entity, SensorEntity):
     @property
     def native_value(self) -> float | None:
         """Return the most recent rower result's duration, or None if there isn't one."""
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         return result.duration_seconds if result is not None else None
+
+
+class Concept2LastWorkoutPaceSensor(Concept2Entity, SensorEntity):
+    """Pace (seconds per 500m) of the most recently logged rowing result."""
+
+    _attr_translation_key = "last_workout_pace"
+    _attr_device_class = SensorDeviceClass.DURATION
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_native_unit_of_measurement = UnitOfTime.SECONDS
+
+    def __init__(
+        self, coordinator: Concept2DataUpdateCoordinator, entry: ConfigEntry
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, entry)
+        self._attr_unique_id = f"concept2_{entry.unique_id}_last_workout_pace"
+
+    @property
+    def native_value(self) -> float | None:
+        """Return seconds per 500m, or None if there's no result yet or it's zero-distance."""
+        result = self.coordinator.data.latest
+        return pace_500m_seconds(result) if result is not None else None
 
 
 class Concept2DaysSinceLastWorkoutSensor(Concept2Entity, SensorEntity):
@@ -137,7 +163,7 @@ class Concept2DaysSinceLastWorkoutSensor(Concept2Entity, SensorEntity):
         computing the calendar-day difference from "now", so a row finished late at
         night in local time isn't miscounted due to UTC rollover.
         """
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         if result is None:
             return None
         last_workout_date = dt_util.as_local(result.date).date()

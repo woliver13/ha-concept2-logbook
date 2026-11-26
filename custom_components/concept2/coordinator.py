@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
@@ -15,10 +17,19 @@ from .api import (
     Concept2Result,
 )
 from .const import DOMAIN, FAILURES_BEFORE_REPAIR_ISSUE, LOGGER
+from .seen_results import Concept2SeenResultsTracker
 
 
-class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2Result | None]):
-    """Fetches the latest logged rower result from the Concept2 API.
+@dataclass
+class Concept2PollResult:
+    """Bundle of a poll's current latest result and any newly-detected results."""
+
+    latest: Concept2Result | None
+    new_results: list[Concept2Result]
+
+
+class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2PollResult]):
+    """Fetches recent logged rower results from the Concept2 API.
 
     There is no rolling update_interval: refreshes happen on setup, at a fixed local
     nightly time (registered in __init__.py), and on demand via the refresh button.
@@ -35,6 +46,7 @@ class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2Result | None]
         super().__init__(hass, LOGGER, name=DOMAIN, update_interval=None)
         self.config_entry = entry
         self._client = client
+        self._tracker = Concept2SeenResultsTracker(hass, entry)
         self._consecutive_failures = 0
 
     @property
@@ -52,10 +64,10 @@ class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2Result | None]
         """Return the id of this entry's poll-failure repair issue."""
         return f"poll_failing_{self.config_entry.entry_id}"
 
-    async def _async_update_data(self) -> Concept2Result | None:
-        """Fetch the latest rower result from the Concept2 API."""
+    async def _async_update_data(self) -> Concept2PollResult:
+        """Fetch recent rower results from the Concept2 API."""
         try:
-            result = await self._client.async_get_latest_rower_result()
+            results = await self._client.async_get_recent_rower_results()
         except Concept2AuthError as err:
             raise ConfigEntryAuthFailed("Concept2 access token is no longer valid") from err
         except Concept2ConnectionError as err:
@@ -64,7 +76,10 @@ class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2Result | None]
 
         self._consecutive_failures = 0
         ir.async_delete_issue(self.hass, DOMAIN, self.issue_id)
-        return result
+        new_results = await self._tracker.async_detect_new_results(results)
+        return Concept2PollResult(
+            latest=results[-1] if results else None, new_results=new_results
+        )
 
     def _async_record_failure(self, err: Exception) -> None:
         """Count a failed poll and raise the repair issue once there are enough in a row."""

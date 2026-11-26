@@ -14,9 +14,14 @@ from homeassistant.helpers import entity_registry as er
 
 from custom_components.concept2.api import Concept2AuthError, Concept2ConnectionError
 from custom_components.concept2.config_flow import _options_schema
-from custom_components.concept2.const import CONF_REFRESH_HOUR, CONF_REFRESH_MINUTE, DOMAIN
+from custom_components.concept2.const import (
+    CONF_POLL_INTERVAL_MINUTES,
+    CONF_REFRESH_HOUR,
+    CONF_REFRESH_MINUTE,
+    DOMAIN,
+)
 
-RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_latest_rower_result"
+RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_recent_rower_results"
 USER_ID_PATH = "custom_components.concept2.config_flow.Concept2ApiClient.async_get_user_id"
 NEW_TOKEN = "new-token"
 
@@ -29,7 +34,7 @@ def _last_workout_date_registered(hass: HomeAssistant, entry) -> bool:
 
 async def _setup(hass: HomeAssistant, entry) -> None:
     entry.add_to_hass(hass)
-    with patch(RESULT_PATH, AsyncMock(return_value=None)):
+    with patch(RESULT_PATH, AsyncMock(return_value=[])):
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
     assert entry.state is ConfigEntryState.LOADED
@@ -59,7 +64,7 @@ async def test_401_starts_reauth_and_valid_token_resolves_it(
     assert flows[0]["step_id"] == "reauth_confirm"
 
     with patch(USER_ID_PATH, AsyncMock(return_value="12345")), patch(
-        RESULT_PATH, AsyncMock(return_value=None)
+        RESULT_PATH, AsyncMock(return_value=[])
     ):
         result = await hass.config_entries.flow.async_configure(
             flows[0]["flow_id"], {CONF_ACCESS_TOKEN: NEW_TOKEN}
@@ -88,7 +93,7 @@ async def test_401_at_setup_starts_reauth_and_resolves(
     assert len(flows) == 1
 
     with patch(USER_ID_PATH, AsyncMock(return_value="12345")), patch(
-        RESULT_PATH, AsyncMock(return_value=None)
+        RESULT_PATH, AsyncMock(return_value=[])
     ):
         await hass.config_entries.flow.async_configure(
             flows[0]["flow_id"], {CONF_ACCESS_TOKEN: NEW_TOKEN}
@@ -130,7 +135,7 @@ async def test_options_flow_rotates_token(hass: HomeAssistant, mock_config_entry
     assert result["step_id"] == "init"
 
     with patch(USER_ID_PATH, AsyncMock(return_value="12345")), patch(
-        RESULT_PATH, AsyncMock(return_value=None)
+        RESULT_PATH, AsyncMock(return_value=[])
     ):
         result = await hass.config_entries.options.async_configure(
             result["flow_id"], {CONF_ACCESS_TOKEN: NEW_TOKEN}
@@ -177,7 +182,7 @@ async def test_options_flow_sets_polling_schedule(
     result = await hass.config_entries.options.async_init(mock_config_entry.entry_id)
 
     with patch(USER_ID_PATH, AsyncMock(return_value="12345")), patch(
-        RESULT_PATH, AsyncMock(return_value=None)
+        RESULT_PATH, AsyncMock(return_value=[])
     ):
         result = await hass.config_entries.options.async_configure(
             result["flow_id"],
@@ -198,14 +203,14 @@ async def test_options_flow_keeps_existing_schedule_when_omitted(
     hass.config_entries.async_update_entry(
         mock_config_entry, options={CONF_REFRESH_HOUR: 5, CONF_REFRESH_MINUTE: 15}
     )
-    with patch(RESULT_PATH, AsyncMock(return_value=None)):
+    with patch(RESULT_PATH, AsyncMock(return_value=[])):
         assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
 
     result = await hass.config_entries.options.async_init(mock_config_entry.entry_id)
 
     with patch(USER_ID_PATH, AsyncMock(return_value="12345")), patch(
-        RESULT_PATH, AsyncMock(return_value=None)
+        RESULT_PATH, AsyncMock(return_value=[])
     ):
         result = await hass.config_entries.options.async_configure(
             result["flow_id"], {CONF_ACCESS_TOKEN: NEW_TOKEN}
@@ -219,13 +224,39 @@ async def test_options_flow_keeps_existing_schedule_when_omitted(
 
 @pytest.mark.parametrize(
     ("field", "value"),
-    [(CONF_REFRESH_HOUR, 24), (CONF_REFRESH_HOUR, -1), (CONF_REFRESH_MINUTE, 60)],
+    [
+        (CONF_REFRESH_HOUR, 24),
+        (CONF_REFRESH_HOUR, -1),
+        (CONF_REFRESH_MINUTE, 60),
+        (CONF_POLL_INTERVAL_MINUTES, 14),
+    ],
 )
 def test_options_schema_rejects_out_of_range_schedule(
     mock_config_entry, field: str, value: int
 ) -> None:
-    """The options schema rejects an hour outside 0-23 or a minute outside 0-59."""
+    """The options schema rejects an hour outside 0-23, a minute outside 0-59, or too short a poll interval."""
     with pytest.raises(vol.Invalid):
         _options_schema(mock_config_entry)(
             {CONF_ACCESS_TOKEN: "token", field: value}
         )
+
+
+async def test_options_flow_sets_polling_interval(
+    hass: HomeAssistant, mock_config_entry
+) -> None:
+    """The options flow stores a valid poll interval in the entry's options."""
+    await _setup(hass, mock_config_entry)
+
+    result = await hass.config_entries.options.async_init(mock_config_entry.entry_id)
+
+    with patch(USER_ID_PATH, AsyncMock(return_value="12345")), patch(
+        RESULT_PATH, AsyncMock(return_value=[])
+    ):
+        result = await hass.config_entries.options.async_configure(
+            result["flow_id"],
+            {CONF_ACCESS_TOKEN: NEW_TOKEN, CONF_POLL_INTERVAL_MINUTES: 20},
+        )
+        await hass.async_block_till_done()
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert mock_config_entry.options[CONF_POLL_INTERVAL_MINUTES] == 20

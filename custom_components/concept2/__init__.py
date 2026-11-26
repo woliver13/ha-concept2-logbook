@@ -2,16 +2,17 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ACCESS_TOKEN, Platform
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import issue_registry as ir
-from homeassistant.helpers.event import async_track_time_change
+from homeassistant.helpers.event import async_track_time_change, async_track_time_interval
 
 from .api import Concept2ApiClient
 from .const import (
+    CONF_POLL_INTERVAL_MINUTES,
     CONF_REFRESH_HOUR,
     CONF_REFRESH_MINUTE,
     DEFAULT_REFRESH_HOUR,
@@ -20,7 +21,7 @@ from .const import (
 )
 from .coordinator import Concept2DataUpdateCoordinator
 
-PLATFORMS: list[Platform] = [Platform.BUTTON, Platform.SENSOR]
+PLATFORMS: list[Platform] = [Platform.BUTTON, Platform.EVENT, Platform.SENSOR]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -48,6 +49,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             second=0,
         )
     )
+
+    # Optional sub-daily polling, off by default. Goes through the same refresh path as
+    # the nightly trigger and the manual button, so new-result detection runs either way.
+    poll_interval_minutes = entry.options.get(CONF_POLL_INTERVAL_MINUTES)
+    if poll_interval_minutes:
+        entry.async_on_unload(
+            async_track_time_interval(
+                hass, _async_nightly_refresh, timedelta(minutes=poll_interval_minutes)
+            )
+        )
 
     # Reload when the token changes (reauth or options flow) so the client picks it up.
     entry.async_on_unload(entry.add_update_listener(_async_reload_on_update))

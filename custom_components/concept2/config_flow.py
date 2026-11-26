@@ -14,12 +14,14 @@ from homeassistant.data_entry_flow import FlowResult
 
 from .api import Concept2ApiClient, Concept2ApiError, Concept2AuthError, Concept2ConnectionError
 from .const import (
+    CONF_POLL_INTERVAL_MINUTES,
     CONF_REFRESH_HOUR,
     CONF_REFRESH_MINUTE,
     DEFAULT_REFRESH_HOUR,
     DEFAULT_REFRESH_MINUTE,
     DOMAIN,
     LOGGER,
+    MIN_POLL_INTERVAL_MINUTES,
 )
 
 STEP_TOKEN_DATA_SCHEMA = vol.Schema({vol.Required(CONF_ACCESS_TOKEN): str})
@@ -38,6 +40,12 @@ def _options_schema(entry: ConfigEntry) -> vol.Schema:
                 CONF_REFRESH_MINUTE,
                 default=entry.options.get(CONF_REFRESH_MINUTE, DEFAULT_REFRESH_MINUTE),
             ): vol.All(vol.Coerce(int), vol.Range(min=0, max=59)),
+            vol.Optional(
+                CONF_POLL_INTERVAL_MINUTES,
+                description={
+                    "suggested_value": entry.options.get(CONF_POLL_INTERVAL_MINUTES)
+                },
+            ): vol.All(vol.Coerce(int), vol.Range(min=MIN_POLL_INTERVAL_MINUTES)),
         }
     )
 
@@ -176,6 +184,9 @@ class Concept2OptionsFlow(OptionsFlow):
                         CONF_REFRESH_MINUTE: user_input.get(
                             CONF_REFRESH_MINUTE,
                             self._entry.options.get(CONF_REFRESH_MINUTE, DEFAULT_REFRESH_MINUTE),
+                        ),
+                        CONF_POLL_INTERVAL_MINUTES: user_input.get(
+                            CONF_POLL_INTERVAL_MINUTES
                         ),
                     },
                 )
