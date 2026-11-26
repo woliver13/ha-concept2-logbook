@@ -10,8 +10,17 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ACCESS_TOKEN
 from homeassistant.core import HomeAssistant
 
-# The token, anything that identifies the rower, free text they typed, and heart rate readings.
-TO_REDACT = {CONF_ACCESS_TOKEN, "unique_id", "user_id", "comments", "heart_rate"}
+# The token, anything that identifies the rower, free text they typed, and heart rate
+# readings (both the raw per-split API shape and the parsed result's summary fields).
+TO_REDACT = {
+    CONF_ACCESS_TOKEN,
+    "unique_id",
+    "user_id",
+    "comments",
+    "heart_rate",
+    "heart_rate_avg",
+    "heart_rate_ending",
+}
 
 
 async def async_get_config_entry_diagnostics(

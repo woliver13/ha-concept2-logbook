@@ -17,15 +17,12 @@ from .api import (
     Concept2Result,
 )
 from .const import DOMAIN, FAILURES_BEFORE_REPAIR_ISSUE, LOGGER
+from .seen_results import Concept2SeenResultsTracker
 
 
 @dataclass
 class Concept2PollResult:
-    """Bundle of a poll's current latest result and any newly-detected results.
-
-    `new_results` is populated by the new-workout detection logic; this coordinator
-    always returns an empty list here until that logic is wired in.
-    """
+    """Bundle of a poll's current latest result and any newly-detected results."""
 
     latest: Concept2Result | None
     new_results: list[Concept2Result]
@@ -49,6 +46,7 @@ class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2PollResult]):
         super().__init__(hass, LOGGER, name=DOMAIN, update_interval=None)
         self.config_entry = entry
         self._client = client
+        self._tracker = Concept2SeenResultsTracker(hass, entry)
         self._consecutive_failures = 0
 
     @property
@@ -78,8 +76,9 @@ class Concept2DataUpdateCoordinator(DataUpdateCoordinator[Concept2PollResult]):
 
         self._consecutive_failures = 0
         ir.async_delete_issue(self.hass, DOMAIN, self.issue_id)
+        new_results = await self._tracker.async_detect_new_results(results)
         return Concept2PollResult(
-            latest=results[-1] if results else None, new_results=[]
+            latest=results[-1] if results else None, new_results=new_results
         )
 
     def _async_record_failure(self, err: Exception) -> None:

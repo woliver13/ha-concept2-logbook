@@ -1,12 +1,19 @@
 """Tests for the Concept2 Logbook API client."""
 
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from homeassistant.core import HomeAssistant
+from homeassistant.util import dt as dt_util
 
-from custom_components.concept2.api import Concept2ApiClient, Concept2ConnectionError
+from custom_components.concept2.api import (
+    Concept2ApiClient,
+    Concept2ConnectionError,
+    Concept2Result,
+    pace_500m_seconds,
+)
 
 REQUEST_PATH = "custom_components.concept2.api.Concept2ApiClient._request"
 
@@ -103,3 +110,60 @@ async def test_server_error_is_reported_as_a_connection_error(hass: HomeAssistan
 
     with pytest.raises(Concept2ConnectionError):
         await client.async_get_recent_rower_results()
+
+
+async def test_heart_rate_summary_is_averaged_across_splits(hass: HomeAssistant) -> None:
+    """heart_rate_avg averages each split's average; heart_rate_ending is the last split's."""
+    payload = {
+        "data": [
+            {
+                **_raw_result(1, "rower", "2026-09-10T08:00:00"),
+                "workout": {
+                    "splits": [
+                        {"heart_rate": {"average": 140, "ending": 150}},
+                        {"heart_rate": {"average": 160, "ending": 170}},
+                    ]
+                },
+            }
+        ]
+    }
+    client = Concept2ApiClient(hass, "token")
+    with patch(REQUEST_PATH, AsyncMock(return_value=payload)):
+        results = await client.async_get_recent_rower_results()
+
+    assert results[0].heart_rate_avg == 150
+    assert results[0].heart_rate_ending == 170
+
+
+async def test_heart_rate_summary_is_none_without_split_data(hass: HomeAssistant) -> None:
+    """A result with no workout/splits data has no heart rate summary."""
+    payload = {"data": [_raw_result(1, "rower", "2026-09-10T08:00:00")]}
+    client = Concept2ApiClient(hass, "token")
+    with patch(REQUEST_PATH, AsyncMock(return_value=payload)):
+        results = await client.async_get_recent_rower_results()
+
+    assert results[0].heart_rate_avg is None
+    assert results[0].heart_rate_ending is None
+
+
+def _result(distance_meters: float, duration_seconds: float) -> Concept2Result:
+    return Concept2Result(
+        result_id=1,
+        date=dt_util.as_utc(datetime(2026, 9, 10, 8, 0, 0)),
+        distance_meters=distance_meters,
+        duration_seconds=duration_seconds,
+        calories_total=None,
+        stroke_count=None,
+        stroke_rate=None,
+        drag_factor=None,
+    )
+
+
+def test_pace_500m_seconds_normal_value() -> None:
+    """Pace is duration / (distance / 500)."""
+    assert pace_500m_seconds(_result(2000, 400)) == 100.0
+
+
+def test_pace_500m_seconds_zero_distance_returns_none() -> None:
+    """A zero-distance result doesn't raise a division error."""
+    assert pace_500m_seconds(_result(0, 400)) is None

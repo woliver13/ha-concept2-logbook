@@ -39,6 +39,15 @@ class Concept2Result:
     stroke_count: int | None
     stroke_rate: int | None
     drag_factor: int | None
+    heart_rate_avg: int | None = None
+    heart_rate_ending: int | None = None
+
+
+def pace_500m_seconds(result: Concept2Result) -> float | None:
+    """Return a result's pace in seconds per 500m, or None for a zero-distance result."""
+    if not result.distance_meters:
+        return None
+    return result.duration_seconds / (result.distance_meters / 500)
 
 
 class Concept2ApiClient:
@@ -90,6 +99,7 @@ class Concept2ApiClient:
 
 def _parse_result(raw: dict[str, Any]) -> Concept2Result:
     """Turn one raw API result into a Concept2Result."""
+    heart_rate_avg, heart_rate_ending = _parse_heart_rate_summary(raw)
     return Concept2Result(
         result_id=raw["id"],
         date=_parse_timestamp(raw["date"]),
@@ -99,7 +109,32 @@ def _parse_result(raw: dict[str, Any]) -> Concept2Result:
         stroke_count=raw.get("stroke_count"),
         stroke_rate=raw.get("stroke_rate"),
         drag_factor=raw.get("drag_factor"),
+        heart_rate_avg=heart_rate_avg,
+        heart_rate_ending=heart_rate_ending,
     )
+
+
+def _parse_heart_rate_summary(raw: dict[str, Any]) -> tuple[int | None, int | None]:
+    """Return (average, ending) heart rate across a result's splits, or (None, None).
+
+    The API has no result-level heart-rate summary, only a `heart_rate` object per
+    split (`workout.splits[].heart_rate`), so this averages the splits' own averages
+    and takes the last split's ending reading.
+    """
+    splits = raw.get("workout", {}).get("splits", [])
+    averages = [
+        split["heart_rate"]["average"]
+        for split in splits
+        if isinstance(split.get("heart_rate"), dict) and "average" in split["heart_rate"]
+    ]
+    endings = [
+        split["heart_rate"]["ending"]
+        for split in splits
+        if isinstance(split.get("heart_rate"), dict) and "ending" in split["heart_rate"]
+    ]
+    average = round(sum(averages) / len(averages)) if averages else None
+    ending = endings[-1] if endings else None
+    return average, ending
 
 
 def _parse_timestamp(raw_date: str) -> datetime:

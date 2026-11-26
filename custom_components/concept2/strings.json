@@ -32,6 +32,18 @@
         "name": "Refresh"
       }
     },
+    "event": {
+      "new_workout": {
+        "name": "New workout",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "workout_logged": "Workout logged"
+            }
+          }
+        }
+      }
+    },
     "sensor": {
       "last_workout_date": {
         "name": "Last workout date"
