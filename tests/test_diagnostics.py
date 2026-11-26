@@ -9,7 +9,7 @@ from custom_components.concept2.api import Concept2ConnectionError
 from custom_components.concept2.diagnostics import async_get_config_entry_diagnostics
 
 REQUEST_PATH = "custom_components.concept2.api.Concept2ApiClient._request"
-RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_latest_rower_result"
+RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_recent_rower_results"
 
 TOKEN = "existing-token"
 
@@ -55,7 +55,7 @@ async def test_diagnostics_has_state_and_raw_response_without_the_token(
     coordinator = diagnostics["coordinator"]
     assert coordinator["last_update_success"] is True
     assert coordinator["consecutive_failures"] == 0
-    assert coordinator["data"]["distance_meters"] == 6000
+    assert coordinator["data"]["latest"]["distance_meters"] == 6000
 
     raw_result = diagnostics["last_raw_response"]["data"][0]
     assert raw_result["distance"] == 6000
@@ -94,11 +94,11 @@ async def test_diagnostics_reports_failures(hass: HomeAssistant, mock_config_ent
 async def test_diagnostics_before_any_response(hass: HomeAssistant, mock_config_entry) -> None:
     """With no response yet the raw response is None."""
     mock_config_entry.add_to_hass(hass)
-    with patch(RESULT_PATH, AsyncMock(return_value=None)):
+    with patch(RESULT_PATH, AsyncMock(return_value=[])):
         assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
 
     diagnostics = await async_get_config_entry_diagnostics(hass, mock_config_entry)
 
     assert diagnostics["last_raw_response"] is None
-    assert diagnostics["coordinator"]["data"] is None
+    assert diagnostics["coordinator"]["data"]["latest"] is None

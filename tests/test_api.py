@@ -26,7 +26,7 @@ def _raw_result(result_id: int, result_type: str, date: str) -> dict:
 
 
 async def test_bike_and_ski_results_are_filtered_out(hass: HomeAssistant) -> None:
-    """Only `rower` results are considered when picking the latest result."""
+    """Only `rower` results are returned."""
     payload = {
         "data": [
             _raw_result(1, "rower", "2026-09-10T08:00:00"),
@@ -36,14 +36,13 @@ async def test_bike_and_ski_results_are_filtered_out(hass: HomeAssistant) -> Non
     }
     client = Concept2ApiClient(hass, "token")
     with patch(REQUEST_PATH, AsyncMock(return_value=payload)):
-        result = await client.async_get_latest_rower_result()
+        results = await client.async_get_recent_rower_results()
 
-    assert result is not None
-    assert result.result_id == 1
+    assert [result.result_id for result in results] == [1]
 
 
-async def test_most_recent_rower_result_is_selected(hass: HomeAssistant) -> None:
-    """Among multiple rower results, the most recent by date wins, ignoring newer non-rower ones."""
+async def test_multiple_rower_results_are_all_returned(hass: HomeAssistant) -> None:
+    """All rower results come back, ignoring interleaved non-rower ones."""
     payload = {
         "data": [
             _raw_result(1, "rower", "2026-09-10T08:00:00"),
@@ -53,20 +52,35 @@ async def test_most_recent_rower_result_is_selected(hass: HomeAssistant) -> None
     }
     client = Concept2ApiClient(hass, "token")
     with patch(REQUEST_PATH, AsyncMock(return_value=payload)):
-        result = await client.async_get_latest_rower_result()
+        results = await client.async_get_recent_rower_results()
 
-    assert result is not None
-    assert result.result_id == 2
+    assert [result.result_id for result in results] == [1, 2]
 
 
-async def test_no_rower_results_returns_none(hass: HomeAssistant) -> None:
-    """Returns None when the API has results but none are type `rower`."""
+async def test_results_are_sorted_ascending_by_date(hass: HomeAssistant) -> None:
+    """Results come back oldest-first, regardless of the API's own response order."""
+    payload = {
+        "data": [
+            _raw_result(2, "rower", "2026-09-20T08:00:00"),
+            _raw_result(1, "rower", "2026-09-10T08:00:00"),
+            _raw_result(3, "rower", "2026-09-25T08:00:00"),
+        ]
+    }
+    client = Concept2ApiClient(hass, "token")
+    with patch(REQUEST_PATH, AsyncMock(return_value=payload)):
+        results = await client.async_get_recent_rower_results()
+
+    assert [result.result_id for result in results] == [1, 2, 3]
+
+
+async def test_no_rower_results_returns_empty_list(hass: HomeAssistant) -> None:
+    """Returns an empty list when the API has results but none are type `rower`."""
     payload = {"data": [_raw_result(1, "bike", "2026-09-20T08:00:00")]}
     client = Concept2ApiClient(hass, "token")
     with patch(REQUEST_PATH, AsyncMock(return_value=payload)):
-        result = await client.async_get_latest_rower_result()
+        results = await client.async_get_recent_rower_results()
 
-    assert result is None
+    assert results == []
 
 
 async def test_timeout_is_reported_as_a_connection_error(hass: HomeAssistant) -> None:
@@ -76,7 +90,7 @@ async def test_timeout_is_reported_as_a_connection_error(hass: HomeAssistant) ->
     client._session.get.side_effect = TimeoutError()
 
     with pytest.raises(Concept2ConnectionError):
-        await client.async_get_latest_rower_result()
+        await client.async_get_recent_rower_results()
 
 
 async def test_server_error_is_reported_as_a_connection_error(hass: HomeAssistant) -> None:
@@ -88,4 +102,4 @@ async def test_server_error_is_reported_as_a_connection_error(hass: HomeAssistan
     client._session.get.return_value.__aexit__ = AsyncMock(return_value=False)
 
     with pytest.raises(Concept2ConnectionError):
-        await client.async_get_latest_rower_result()
+        await client.async_get_recent_rower_results()

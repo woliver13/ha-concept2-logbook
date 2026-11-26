@@ -19,9 +19,11 @@ async def async_get_config_entry_diagnostics(
 ) -> dict[str, Any]:
     """Return diagnostics for a config entry, with the token and personal data redacted."""
     coordinator = entry.runtime_data
-    data = asdict(coordinator.data) if coordinator.data is not None else None
-    if data is not None:
-        data["date"] = data["date"].isoformat()
+    data = asdict(coordinator.data)
+    if data["latest"] is not None:
+        data["latest"]["date"] = data["latest"]["date"].isoformat()
+    for new_result in data["new_results"]:
+        new_result["date"] = new_result["date"].isoformat()
 
     return async_redact_data(
         {

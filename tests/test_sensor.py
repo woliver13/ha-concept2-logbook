@@ -12,7 +12,7 @@ from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
 from custom_components.concept2.api import Concept2Result
 from custom_components.concept2.const import DOMAIN
 
-RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_latest_rower_result"
+RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_recent_rower_results"
 
 SENSOR_KEYS = [
     "last_workout_date",
@@ -37,7 +37,8 @@ def _make_result(date: datetime) -> Concept2Result:
 
 async def _setup_entry(hass: HomeAssistant, mock_config_entry, result) -> None:
     mock_config_entry.add_to_hass(hass)
-    with patch(RESULT_PATH, AsyncMock(return_value=result)):
+    results = [result] if result is not None else []
+    with patch(RESULT_PATH, AsyncMock(return_value=results)):
         assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
 

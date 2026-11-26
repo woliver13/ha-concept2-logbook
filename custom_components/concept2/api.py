@@ -55,8 +55,12 @@ class Concept2ApiClient:
         payload = await self._request("/users/me")
         return str(payload["data"]["id"])
 
-    async def async_get_latest_rower_result(self) -> Concept2Result | None:
-        """Return the most recently logged rower result, or None if there isn't one."""
+    async def async_get_recent_rower_results(self) -> list[Concept2Result]:
+        """Return recent rower results, sorted ascending by date; empty if there are none.
+
+        Only page 1 is fetched, on the assumption a user logs far fewer results between
+        polls than a page holds.
+        """
         payload = await self._request("/users/me/results")
         self.last_response = payload
         results = [
@@ -64,9 +68,8 @@ class Concept2ApiClient:
             for item in payload.get("data", [])
             if item.get("type") == ROWER_RESULT_TYPE
         ]
-        if not results:
-            return None
-        return max(results, key=lambda result: result.date)
+        results.sort(key=lambda result: result.date)
+        return results
 
     async def _request(self, path: str) -> dict[str, Any]:
         """Make an authenticated GET request and return the parsed JSON body."""
