@@ -19,6 +19,14 @@ CONF_REFRESH_MINUTE = "refresh_minute"
 DEFAULT_REFRESH_HOUR = 3
 DEFAULT_REFRESH_MINUTE = 0
 
+# Options-flow key for the optional sub-daily polling interval. Unset (None) means off,
+# so every upgraded install keeps today's nightly-only behavior until a user opts in.
+CONF_POLL_INTERVAL_MINUTES = "poll_interval_minutes"
+
+# Minimum allowed value for the above, chosen to stay well clear of Concept2's API rate
+# limits for a personal-access-token client polling on its own schedule.
+MIN_POLL_INTERVAL_MINUTES = 15
+
 # Consecutive failed polls before a repair issue is raised.
 FAILURES_BEFORE_REPAIR_ISSUE = 3
 
