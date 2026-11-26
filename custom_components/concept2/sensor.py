@@ -53,13 +53,13 @@ class Concept2LastWorkoutDateSensor(Concept2Entity, SensorEntity):
     @property
     def native_value(self) -> datetime | None:
         """Return the most recent rower result's timestamp, or None if there isn't one."""
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         return result.date if result is not None else None
 
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return extra API fields not worth a dedicated sensor of their own."""
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         if result is None:
             return None
         return {
@@ -89,7 +89,7 @@ class Concept2LastWorkoutDistanceSensor(Concept2Entity, SensorEntity):
     @property
     def native_value(self) -> float | None:
         """Return the most recent rower result's distance, or None if there isn't one."""
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         return result.distance_meters if result is not None else None
 
 
@@ -111,7 +111,7 @@ class Concept2LastWorkoutDurationSensor(Concept2Entity, SensorEntity):
     @property
     def native_value(self) -> float | None:
         """Return the most recent rower result's duration, or None if there isn't one."""
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         return result.duration_seconds if result is not None else None
 
 
@@ -137,7 +137,7 @@ class Concept2DaysSinceLastWorkoutSensor(Concept2Entity, SensorEntity):
         computing the calendar-day difference from "now", so a row finished late at
         night in local time isn't miscounted due to UTC rollover.
         """
-        result = self.coordinator.data
+        result = self.coordinator.data.latest
         if result is None:
             return None
         last_workout_date = dt_util.as_local(result.date).date()

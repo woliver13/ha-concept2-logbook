@@ -14,7 +14,7 @@ from homeassistant.util import dt as dt_util
 from custom_components.concept2.api import Concept2ConnectionError, Concept2Result
 from custom_components.concept2.const import DOMAIN
 
-RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_latest_rower_result"
+RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_recent_rower_results"
 
 RESULT = Concept2Result(
     result_id=1,
@@ -53,7 +53,7 @@ async def test_single_failed_poll_raises_update_failed_and_keeps_values(
     hass: HomeAssistant, mock_config_entry
 ) -> None:
     """One failed poll raises UpdateFailed but the sensors keep their last values."""
-    mock_fetch = AsyncMock(return_value=RESULT)
+    mock_fetch = AsyncMock(return_value=[RESULT])
     with patch(RESULT_PATH, mock_fetch):
         coordinator = await _set_up(hass, mock_config_entry, mock_fetch)
 
@@ -65,7 +65,7 @@ async def test_single_failed_poll_raises_update_failed_and_keeps_values(
         await hass.async_block_till_done()
 
     assert coordinator.last_update_success is False
-    assert coordinator.data == RESULT
+    assert coordinator.data.latest == RESULT
     state = _distance_state(hass, mock_config_entry)
     assert state.state == "6000"
 
@@ -74,7 +74,7 @@ async def test_fewer_than_three_failures_create_no_repair_issue(
     hass: HomeAssistant, mock_config_entry
 ) -> None:
     """Two consecutive failures do not raise a repair issue."""
-    mock_fetch = AsyncMock(return_value=RESULT)
+    mock_fetch = AsyncMock(return_value=[RESULT])
     with patch(RESULT_PATH, mock_fetch):
         coordinator = await _set_up(hass, mock_config_entry, mock_fetch)
 
@@ -89,7 +89,7 @@ async def test_third_consecutive_failure_creates_repair_issue(
     hass: HomeAssistant, mock_config_entry
 ) -> None:
     """The third failure in a row raises exactly one repair issue, and later ones keep it."""
-    mock_fetch = AsyncMock(return_value=RESULT)
+    mock_fetch = AsyncMock(return_value=[RESULT])
     with patch(RESULT_PATH, mock_fetch):
         coordinator = await _set_up(hass, mock_config_entry, mock_fetch)
 
@@ -112,7 +112,7 @@ async def test_success_clears_repair_issue_and_resets_counter(
     hass: HomeAssistant, mock_config_entry
 ) -> None:
     """A successful poll clears the issue and restarts the count from zero."""
-    mock_fetch = AsyncMock(return_value=RESULT)
+    mock_fetch = AsyncMock(return_value=[RESULT])
     with patch(RESULT_PATH, mock_fetch):
         coordinator = await _set_up(hass, mock_config_entry, mock_fetch)
 
@@ -122,7 +122,7 @@ async def test_success_clears_repair_issue_and_resets_counter(
         assert _issue(hass, mock_config_entry) is not None
 
         mock_fetch.side_effect = None
-        mock_fetch.return_value = RESULT
+        mock_fetch.return_value = [RESULT]
         await coordinator.async_refresh()
         assert _issue(hass, mock_config_entry) is None
         assert coordinator.last_update_success is True
@@ -139,7 +139,7 @@ async def test_removing_entry_deletes_repair_issue(
     hass: HomeAssistant, mock_config_entry
 ) -> None:
     """Removing the integration removes its repair issue."""
-    mock_fetch = AsyncMock(return_value=RESULT)
+    mock_fetch = AsyncMock(return_value=[RESULT])
     with patch(RESULT_PATH, mock_fetch):
         coordinator = await _set_up(hass, mock_config_entry, mock_fetch)
         mock_fetch.side_effect = Concept2ConnectionError("boom")

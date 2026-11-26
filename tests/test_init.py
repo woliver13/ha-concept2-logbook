@@ -12,7 +12,7 @@ from homeassistant.util import dt as dt_util
 from custom_components.concept2.api import Concept2Result
 from custom_components.concept2.const import CONF_REFRESH_HOUR, CONF_REFRESH_MINUTE
 
-RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_latest_rower_result"
+RESULT_PATH = "custom_components.concept2.api.Concept2ApiClient.async_get_recent_rower_results"
 
 RESULT = Concept2Result(
     result_id=1,
@@ -41,7 +41,7 @@ async def test_nightly_refresh_fires_at_local_3am(
     freezer.move_to(datetime(2026, 9, 20, 18, 0, 0, tzinfo=local_tz))
 
     mock_config_entry.add_to_hass(hass)
-    mock_fetch = AsyncMock(return_value=RESULT)
+    mock_fetch = AsyncMock(return_value=[RESULT])
     with patch(RESULT_PATH, mock_fetch):
         assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
@@ -76,7 +76,7 @@ async def test_nightly_refresh_honors_configured_schedule(
     hass.config_entries.async_update_entry(
         mock_config_entry, options={CONF_REFRESH_HOUR: 22, CONF_REFRESH_MINUTE: 30}
     )
-    mock_fetch = AsyncMock(return_value=RESULT)
+    mock_fetch = AsyncMock(return_value=[RESULT])
     with patch(RESULT_PATH, mock_fetch):
         assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
@@ -102,7 +102,7 @@ async def test_nightly_refresh_stops_after_unload(
     freezer.move_to(datetime(2026, 9, 20, 18, 0, 0, tzinfo=local_tz))
 
     mock_config_entry.add_to_hass(hass)
-    mock_fetch = AsyncMock(return_value=RESULT)
+    mock_fetch = AsyncMock(return_value=[RESULT])
     with patch(RESULT_PATH, mock_fetch):
         assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
         await hass.async_block_till_done()
