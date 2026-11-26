@@ -18,6 +18,7 @@ SENSOR_KEYS = [
     "last_workout_date",
     "last_workout_distance",
     "last_workout_duration",
+    "last_workout_pace",
     "days_since_last_workout",
 ]
 
@@ -95,7 +96,7 @@ async def test_all_sensors_unknown_with_no_results(
 async def test_last_workout_date_extra_attributes(
     hass: HomeAssistant, mock_config_entry
 ) -> None:
-    """calories_total, stroke_count, stroke_rate, and drag_factor attach to last_workout_date."""
+    """result_id, calories_total, stroke_count, stroke_rate, and drag_factor attach to the sensor."""
     workout_date = dt_util.as_utc(datetime(2026, 9, 15, 8, 0, 0))
     result = _make_result(workout_date)
     await _setup_entry(hass, mock_config_entry, result)
@@ -103,10 +104,12 @@ async def test_last_workout_date_extra_attributes(
     entity_id = _last_workout_date_entity_id(hass, mock_config_entry)
     state = hass.states.get(entity_id)
     assert state is not None
+    assert state.attributes["result_id"] == 1
     assert state.attributes["calories_total"] == 450
     assert state.attributes["stroke_count"] == 900
     assert state.attributes["stroke_rate"] == 24
     assert state.attributes["drag_factor"] == 128
+    assert state.attributes["heart_rate_avg"] is None
 
 
 async def test_last_workout_distance_and_duration_populated(
@@ -211,3 +214,41 @@ async def test_days_since_last_workout_midnight_boundary(
     state = hass.states.get(entity_id)
     assert state is not None
     assert state.state == "1"
+
+
+async def test_last_workout_pace_normal_value(
+    hass: HomeAssistant, mock_config_entry
+) -> None:
+    """Pace reports seconds per 500m for a normal result."""
+    workout_date = dt_util.as_utc(datetime(2026, 9, 15, 8, 0, 0))
+    result = _make_result(workout_date)
+    await _setup_entry(hass, mock_config_entry, result)
+
+    entity_id = _entity_id(hass, mock_config_entry, "last_workout_pace")
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert float(state.state) == 1350.0 / (6000 / 500)
+    assert state.attributes["unit_of_measurement"] == "s"
+
+
+async def test_last_workout_pace_zero_distance_is_unknown(
+    hass: HomeAssistant, mock_config_entry
+) -> None:
+    """A zero-distance result reports unknown instead of a division error."""
+    workout_date = dt_util.as_utc(datetime(2026, 9, 15, 8, 0, 0))
+    result = Concept2Result(
+        result_id=1,
+        date=workout_date,
+        distance_meters=0,
+        duration_seconds=100.0,
+        calories_total=None,
+        stroke_count=None,
+        stroke_rate=None,
+        drag_factor=None,
+    )
+    await _setup_entry(hass, mock_config_entry, result)
+
+    entity_id = _entity_id(hass, mock_config_entry, "last_workout_pace")
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.state == STATE_UNKNOWN
