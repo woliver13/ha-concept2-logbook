@@ -9,7 +9,7 @@
       },
       "reauth_confirm": {
         "title": "Reauthenticate Concept2 Logbook",
-        "description": "Your Concept2 access token no longer works. Enter a new personal access token. To find it, go to log.concept2.com → Edit Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token. If you regenerated the token, use the new one.",
+        "description": "Your Concept2 access token no longer works. Enter a new personal access token. To find it, go to log.concept2.com → Edit Profile → Applications (in the menu on the left) → Concept2 Logbook API → View Token. To make a new token, select Regenerate Token. That button shows only after you select View Token. If you already regenerated the token, use the new one.",
         "data": {
           "access_token": "Access token"
         }

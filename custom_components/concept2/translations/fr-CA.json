@@ -9,7 +9,7 @@
       },
       "reauth_confirm": {
         "title": "Réauthentifier Concept2 Logbook",
-        "description": "Votre jeton d'accès Concept2 ne fonctionne plus. Entrez un nouveau jeton d'accès personnel. Pour le trouver, allez à log.concept2.com → Edit Profile → Applications (dans le menu de gauche) → Concept2 Logbook API → View Token. Si vous avez régénéré le jeton, utilisez le nouveau.",
+        "description": "Votre jeton d'accès Concept2 ne fonctionne plus. Entrez un nouveau jeton d'accès personnel. Pour le trouver, allez à log.concept2.com → Edit Profile → Applications (dans le menu de gauche) → Concept2 Logbook API → View Token. Pour créer un nouveau jeton, sélectionnez Regenerate Token. Ce bouton s'affiche seulement après avoir sélectionné View Token. Si vous avez déjà régénéré le jeton, utilisez le nouveau.",
         "data": {
           "access_token": "Jeton d'accès"
         }
