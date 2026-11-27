@@ -32,6 +32,18 @@
         "name": "Actualizar"
       }
     },
+    "event": {
+      "new_workout": {
+        "name": "Nuevo entrenamiento",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "workout_logged": "Entrenamiento registrado"
+            }
+          }
+        }
+      }
+    },
     "sensor": {
       "last_workout_date": {
         "name": "Fecha del último entrenamiento"
@@ -42,6 +54,9 @@
       "last_workout_duration": {
         "name": "Duración del último entrenamiento"
       },
+      "last_workout_pace": {
+        "name": "Ritmo del último entrenamiento"
+      },
       "days_since_last_workout": {
         "name": "Días desde el último entrenamiento"
       }
@@ -50,11 +65,12 @@
   "options": {
     "step": {
       "init": {
-        "description": "Ingresa un nuevo token de acceso personal para esta cuenta de Concept2. Para encontrarlo, ve a log.concept2.com → Edit Profile → Applications (en el menú de la izquierda) → Concept2 Logbook API → View Token. También puedes cambiar la hora de la actualización nocturna abajo.",
+        "description": "Ingresa un nuevo token de acceso personal para esta cuenta de Concept2. Para encontrarlo, ve a log.concept2.com → Edit Profile → Applications (en el menú de la izquierda) → Concept2 Logbook API → View Token. También puedes cambiar la hora de la actualización nocturna abajo y, si quieres, actualizar con más frecuencia que una vez por noche.",
         "data": {
           "access_token": "Token de acceso",
           "refresh_hour": "Hora de la actualización nocturna (0-23, hora local)",
-          "refresh_minute": "Minuto de la actualización nocturna (0-59)"
+          "refresh_minute": "Minuto de la actualización nocturna (0-59)",
+          "poll_interval_minutes": "Actualizar también cada N minutos (mínimo 15; déjalo vacío para actualizar solo de noche)"
         }
       }
     },

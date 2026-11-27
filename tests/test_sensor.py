@@ -162,7 +162,7 @@ async def test_days_since_last_workout_same_day(
     hass: HomeAssistant, mock_config_entry, freezer
 ) -> None:
     """A workout logged today (local time) reports 0 days since."""
-    hass.config.set_time_zone("America/Los_Angeles")
+    await hass.config.async_set_time_zone("America/Los_Angeles")
     freezer.move_to("2026-09-15 18:00:00-07:00")
 
     workout_date = datetime(2026, 9, 15, 8, 0, 0, tzinfo=dt_util.DEFAULT_TIME_ZONE)
@@ -186,7 +186,7 @@ async def test_days_since_last_workout_late_night_local_boundary(
     day-diff math used UTC dates instead of local ones, "now" a few minutes later
     (still Sep 15 local, Sep 16 UTC) would wrongly report 1 day since instead of 0.
     """
-    hass.config.set_time_zone("America/Los_Angeles")
+    await hass.config.async_set_time_zone("America/Los_Angeles")
     workout_date = datetime(2026, 9, 15, 23, 45, 0, tzinfo=dt_util.DEFAULT_TIME_ZONE)
     freezer.move_to(workout_date + timedelta(minutes=10))
 
@@ -203,7 +203,7 @@ async def test_days_since_last_workout_midnight_boundary(
     hass: HomeAssistant, mock_config_entry, freezer
 ) -> None:
     """A workout the previous local calendar day reports 1, once local midnight has passed."""
-    hass.config.set_time_zone("America/Los_Angeles")
+    await hass.config.async_set_time_zone("America/Los_Angeles")
     workout_date = datetime(2026, 9, 15, 23, 45, 0, tzinfo=dt_util.DEFAULT_TIME_ZONE)
     freezer.move_to("2026-09-16 00:15:00-07:00")
 
