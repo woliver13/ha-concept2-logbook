@@ -40,7 +40,7 @@ async def test_nightly_refresh_fires_at_local_3am(
     hass: HomeAssistant, mock_config_entry, freezer: FrozenDateTimeFactory
 ) -> None:
     """The nightly trigger refreshes at 3:00 AM in HA's local timezone, not 3:00 AM UTC."""
-    hass.config.set_time_zone("America/Los_Angeles")
+    await hass.config.async_set_time_zone("America/Los_Angeles")
     local_tz = dt_util.DEFAULT_TIME_ZONE
     freezer.move_to(datetime(2026, 9, 20, 18, 0, 0, tzinfo=local_tz))
 
@@ -70,7 +70,7 @@ async def test_nightly_refresh_honors_configured_schedule(
     hass: HomeAssistant, mock_config_entry, freezer: FrozenDateTimeFactory
 ) -> None:
     """A custom nightly poll time set via options is used instead of the 3:00 AM default."""
-    hass.config.set_time_zone("America/Los_Angeles")
+    await hass.config.async_set_time_zone("America/Los_Angeles")
     local_tz = dt_util.DEFAULT_TIME_ZONE
     # After 22:30 already passed for this day, so the setup fetch below isn't
     # immediately followed by a same-day 22:30 trigger before the checks start.
@@ -101,7 +101,7 @@ async def test_no_interval_trigger_when_poll_interval_unset(
     hass: HomeAssistant, mock_config_entry, freezer: FrozenDateTimeFactory
 ) -> None:
     """With the poll-interval option unset, only the nightly trigger is registered."""
-    hass.config.set_time_zone("America/Los_Angeles")
+    await hass.config.async_set_time_zone("America/Los_Angeles")
     local_tz = dt_util.DEFAULT_TIME_ZONE
     freezer.move_to(datetime(2026, 9, 20, 10, 0, 0, tzinfo=local_tz))
 
@@ -120,7 +120,7 @@ async def test_poll_interval_fires_refresh_at_configured_cadence(
     hass: HomeAssistant, mock_config_entry, freezer: FrozenDateTimeFactory
 ) -> None:
     """A configured poll interval refreshes on its own cadence, independent of the nightly time."""
-    hass.config.set_time_zone("America/Los_Angeles")
+    await hass.config.async_set_time_zone("America/Los_Angeles")
     local_tz = dt_util.DEFAULT_TIME_ZONE
     freezer.move_to(datetime(2026, 9, 20, 10, 0, 0, tzinfo=local_tz))
 
@@ -145,7 +145,7 @@ async def test_nightly_refresh_stops_after_unload(
     hass: HomeAssistant, mock_config_entry, freezer: FrozenDateTimeFactory
 ) -> None:
     """Unloading the entry cancels the nightly trigger."""
-    hass.config.set_time_zone("America/Los_Angeles")
+    await hass.config.async_set_time_zone("America/Los_Angeles")
     local_tz = dt_util.DEFAULT_TIME_ZONE
     freezer.move_to(datetime(2026, 9, 20, 18, 0, 0, tzinfo=local_tz))
 
