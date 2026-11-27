@@ -12,6 +12,10 @@ to a PM5 monitor over Bluetooth for real-time, in-progress workout data.
 ## Features
 
 - Polls your Concept2 Logbook account once nightly, by default at 3:00 AM (your Home Assistant local time), plus on demand via a refresh button. Change the nightly poll time under the integration's **Configure** option.
+- Optionally polls more often than nightly: set **Also poll every N minutes** (minimum 15) under **Configure**. Leave it blank to keep nightly-only polling.
+- Fires a `workout_logged` event for each newly logged rowing result, so automations can react
+  to a new workout. Results that were already in your logbook when you set up the integration
+  never fire.
 - Only considers indoor **rower** results — bike and SkiErg entries in your logbook are ignored
   so they don't affect these sensors.
 - Your access token is entered through Home Assistant's own setup UI and stored in HA's
@@ -21,11 +25,13 @@ to a PM5 monitor over Bluetooth for real-time, in-progress workout data.
 
 | Entity | Description |
 |---|---|
-| `sensor.<name>_last_workout_date` | Timestamp of your most recent rowing result. Also carries `calories_total`, `stroke_count`, `stroke_rate`, and `drag_factor` as extra attributes. |
+| `sensor.<name>_last_workout_date` | Timestamp of your most recent rowing result. Also carries `result_id`, `calories_total`, `stroke_count`, `stroke_rate`, `drag_factor`, and `heart_rate_avg` as extra attributes. |
 | `sensor.<name>_last_workout_distance` | Distance (meters) of your most recent rowing result. |
 | `sensor.<name>_last_workout_duration` | Duration (seconds) of your most recent rowing result. |
+| `sensor.<name>_last_workout_pace` | Pace (seconds per 500 m) of your most recent rowing result. |
 | `sensor.<name>_days_since_last_workout` | Whole days since your last rowing result, computed in your Home Assistant instance's local timezone. |
-| `button.<name>_refresh` | Triggers an immediate data refresh instead of waiting for the nightly poll. |
+| `event.<name>_new_workout` | Fires a `workout_logged` event for each new rowing result, oldest first and at most 10 per poll. The event data carries `result_id`, `date`, `distance_meters`, `duration_seconds`, `pace_500m_seconds`, `calories_total`, `stroke_count`, `stroke_rate`, `drag_factor`, `heart_rate_avg`, and `heart_rate_ending`. |
+| `button.<name>_refresh` | Triggers an immediate data refresh instead of waiting for the next scheduled poll. |
 
 If you haven't logged a rowing result yet, these sensors report `unknown` until you have.
 
@@ -85,14 +91,35 @@ rowed in N days" notification, build a Home Assistant automation against
 ```yaml
 automation:
   - alias: "Nudge me to row"
-    trigger:
-      - platform: numeric_state
+    triggers:
+      - trigger: numeric_state
         entity_id: sensor.<name>_days_since_last_workout
         above: 3
-    action:
-      - service: notify.notify
+    actions:
+      - action: notify.notify
         data:
           message: "It's been a few days since your last row."
+```
+
+To react to a new workout instead, trigger on the event entity:
+
+```yaml
+automation:
+  - alias: "Announce a new row"
+    triggers:
+      - trigger: state
+        entity_id: event.<name>_new_workout
+        not_from:
+          - unavailable
+          - unknown
+    conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.attributes.event_type == 'workout_logged' }}"
+    actions:
+      - action: notify.notify
+        data:
+          message: >-
+            Logged {{ trigger.to_state.attributes.distance_meters }} m.
 ```
 
 See [`docs/PRD-concept2-ha-integration.md`](docs/PRD-concept2-ha-integration.md) for the full
@@ -101,8 +128,7 @@ sensors, multi-account support).
 
 ## Contributing
 
-This is a personal project built primarily for one household's Home Assistant setup, but issues
-and pull requests are welcome.
+Issues and pull requests are welcome. Please open an issue first for larger changes.
 
 ## License
 
